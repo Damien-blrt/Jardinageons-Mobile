@@ -1,13 +1,3 @@
-## Résumé
-Description courte des changements apportés.
-
-## Type de changement
-- [ ] Feature
-- [ ] Bug fix
-- [ ] Refactor
-- [ ] Improvement
-- [ ] Documentation
-
 ## Détails
 -
 -
