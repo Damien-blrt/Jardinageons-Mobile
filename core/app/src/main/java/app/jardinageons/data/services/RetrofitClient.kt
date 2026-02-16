@@ -1,14 +1,17 @@
 package app.jardinageons.data.services
-
+import app.jardinageons.BuildConfig
+import app.jardinageons.data.interceptors.AuthInterceptor
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-
 
 
 object RetrofitClient {
 
     private const val BASE_URL = "https://codefirst.iut.uca.fr/kubernetes/iut-inf63-projets-etudiants-jardinageons/jardinageons/api/"
-
+    val tokenProvider: () -> String? = {
+        BuildConfig.API_TOKEN
+    }
     /*
         """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
             Supprimez les commentaires quand tout le monde a vu
@@ -16,8 +19,13 @@ object RetrofitClient {
      */
     val seedService: ISeedService by lazy { // Crée une propriété seedService de type ISeedService initialisée seulement à la première utilisation
 
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor(tokenProvider))
+            .build()
+
         val retrofit = Retrofit.Builder() // Crée un constructeur Retrofit
             .baseUrl(BASE_URL) // Définit l'URL de base de l API, tous les endpoints
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             // Ajoute un convertisseur JSON pour transformer les objets Kotlin en JSON et inversement
             .build() // Construit l'instance Retrofit
@@ -28,8 +36,13 @@ object RetrofitClient {
     }
 
     val vegetableService: IVegetableService by lazy {
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor(tokenProvider))
+            .build()
+
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 

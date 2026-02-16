@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 object SeedStub {
     private val tomate = Seed(
         id = 1,
-        name = "tomates",
+        name = "tomatses de test",
         quantity = 3F,
         germinationTime = 21,
         description = "graine super",
