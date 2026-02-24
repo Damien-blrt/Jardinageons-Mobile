@@ -1,4 +1,5 @@
 package app.jardinageons.data.services
+
 import app.jardinageons.BuildConfig
 import app.jardinageons.data.interceptors.AuthInterceptor
 import okhttp3.OkHttpClient
@@ -8,10 +9,12 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-    private const val BASE_URL = "https://codefirst.iut.uca.fr/kubernetes/iut-inf63-projets-etudiants-jardinageons/jardinageons/api/"
+    private const val BASE_URL =
+        "https://codefirst.iut.uca.fr/kubernetes/iut-inf63-projets-etudiants-jardinageons/jardinageons/api/"
     val tokenProvider: () -> String? = {
         BuildConfig.API_TOKEN
     }
+
     /*
         """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
             Supprimez les commentaires quand tout le monde a vu
