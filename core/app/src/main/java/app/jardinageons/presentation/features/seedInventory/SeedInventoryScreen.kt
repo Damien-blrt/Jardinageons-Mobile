@@ -47,7 +47,6 @@ import java.util.Locale
 
 @Composable
 fun SeedInventoryScreen(
-    isLoading: Boolean,
     viewModel: SeedInventoryViewModel = viewModel()
 ) {
     val seedList by viewModel.seeds.collectAsState()
@@ -56,7 +55,7 @@ fun SeedInventoryScreen(
 
     var selectedSeedForEdit by remember { mutableStateOf<Seed?>(null) }
     var createButtonClicked by remember { mutableStateOf<Boolean>(false) }
-
+    val isLoading by viewModel.isLoading.collectAsState()
 
     var searchedSeedName by remember { mutableStateOf("") }
 
