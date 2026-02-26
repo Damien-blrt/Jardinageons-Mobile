@@ -7,8 +7,10 @@ import app.jardinageons.data.models.PagedResponse
 import app.jardinageons.data.models.Seed
 import app.jardinageons.data.repositories.SeedRepository
 import app.jardinageons.data.services.RetrofitClient.seedService
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
@@ -23,6 +25,15 @@ data class SeedRequest(
     val expiryDate: String
 )
 
+enum class Event {
+    modifiedSuccess,
+    modifiedError,
+    addSuccess,
+    addError,
+    deleteSuccess,
+    deleteError,
+}
+
 class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepository(seedService)) :
     ViewModel() {
 
@@ -35,6 +46,11 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
 
     private val _averageGerminationTime = MutableStateFlow(0)
     val averageGerminationTime: StateFlow<Int> = _averageGerminationTime.asStateFlow()
+
+    // Flow pour les événements UI (Snackbar et plus si besoin)
+    // source : https://bytegoblin.io/blog/how-to-handle-single-event-in-jetpack-compose.mdx
+    private val _uiEvent = MutableSharedFlow<Event>()
+    val uiEvent = _uiEvent.asSharedFlow()
 
     //doc du loading : https://medium.com/@madhav2002/how-do-you-show-a-loading-state-in-your-ui-android-kotlin-e1382a7103f9
     private val _isLoading = MutableStateFlow(true)
@@ -66,7 +82,9 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
             try {
                 _repository.createSeed(seed)
                 loadSeeds()
+                _uiEvent.emit(Event.addSuccess)
             } catch (e: Exception) {
+                _uiEvent.emit(Event.addError)
                 Log.e("SeedInventoryViewModel", "Error creating seed.", e)
             } finally {
                 Log.d("SeedInventoryViewModel", "Seed Created.")
@@ -112,7 +130,9 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
             try {
                 _repository.deleteSeed(id)
                 loadSeeds()
+                _uiEvent.emit(Event.deleteSuccess)
             } catch (e: Exception) {
+                _uiEvent.emit(Event.deleteError)
                 Log.e("SeedInventoryViewModel", "Error deleting seed.", e)
             }
         }
@@ -123,7 +143,9 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
             try {
                 _repository.updateSeed(id, seed)
                 loadSeeds()
+                _uiEvent.emit(Event.modifiedSuccess)
             } catch (e: Exception) {
+                _uiEvent.emit(Event.modifiedError)
                 Log.e("SeedInventoryViewModel", "Error updating seed.", e)
             }
         }

@@ -21,12 +21,17 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +46,7 @@ import app.jardinageons.presentation.features.seedInventory.components.CreateSee
 import app.jardinageons.presentation.features.seedInventory.components.EditSeedModal
 import app.jardinageons.presentation.features.seedInventory.components.SeedCard
 import app.jardinageons.presentation.features.seedInventory.components.StatCard
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -59,52 +65,81 @@ fun SeedInventoryScreen(
 
     var searchedSeedName by remember { mutableStateOf("") }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        if (isLoading) {
+    //doc : https://developer.android.com/develop/ui/compose/components/snackbar?hl=fr
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    //doc : https://developer.android.com/develop/ui/compose/side-effects
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { message ->
+            when(message){
+                Event.addSuccess -> snackbarHostState.showSnackbar("Graine ajoutée avec succès")
+                Event.modifiedSuccess -> snackbarHostState.showSnackbar("Graine modifiée avec succès")
+                Event.deleteSuccess -> snackbarHostState.showSnackbar("Graine supprimée avec succès")
+                Event.modifiedError -> snackbarHostState.showSnackbar("Erreur : graine non modifiée")
+                Event.addError -> snackbarHostState.showSnackbar("Erreur : graine non ajoutée")
+                Event.deleteError -> snackbarHostState.showSnackbar("Erreur : graine non supprimée")
+            }
+
+
+        }
+    }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            if (isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center)
             )
         } else {
             /**
-             * La syntaxe selectedSeedForEdit?.let a été générée par une IA. De ce que j'ai compris
-             * c'est une manière plus sécurisée de vérifier si une variable est pas nulle avant de l'utiliser
-             * */
-            selectedSeedForEdit?.let {
-                EditSeedModal(
-                    seed = it,
-                    onDismiss = { selectedSeedForEdit = null },
-                    onSave = { updatedSeed ->
-                        /**
-                         * doc: https://developer.android.com/reference/java/text/DateFormat
-                         */
-                        val isoDate = try {
-                            val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                            val outputFormat =
+                 * La syntaxe selectedSeedForEdit?.let a été générée par une IA. De ce que j'ai compris
+                 * c'est une manière plus sécurisée de vérifier si une variable est pas nulle avant de l'utiliser
+                 * */
+                selectedSeedForEdit?.let {
+                    EditSeedModal(
+                        seed = it,
+                        onDismiss = { selectedSeedForEdit = null },
+                        onSave = { updatedSeed ->
+                            /**
+                             * doc: https://developer.android.com/reference/java/text/DateFormat
+                             */
+                            val isoDate = try {
+                                val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                                val outputFormat =
+                                    SimpleDateFormat(
+                                    
+                                    "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+                                   
+                                    Locale.getDefault()
+                                
+                                )
+                                val date = inputFormat.parse(updatedSeed.expiryDate)
+                                outputFormat.format(date)
+                            } catch (e: Exception) {
                                 SimpleDateFormat(
                                     "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
                                     Locale.getDefault()
+                                ).format(
+                                    Date()
                                 )
-                            val date = inputFormat.parse(updatedSeed.expiryDate)
-                            outputFormat.format(date)
-                        } catch (e: Exception) {
-                            SimpleDateFormat(
-                                "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-                                Locale.getDefault()
-                            ).format(
-                                Date()
-                            )
+                            }
+                            val seed = updatedSeed.copy(expiryDate = isoDate)
+                            viewModel.updateSeed(seed.id, seed)
+                            selectedSeedForEdit = null
+                        },
+                        onDelete = { id ->
+                            viewModel.deleteSeed(id)
+                            selectedSeedForEdit = null
                         }
-                        val seed = updatedSeed.copy(expiryDate = isoDate)
-
-                        viewModel.updateSeed(seed.id, seed)
-                        selectedSeedForEdit = null
-                    },
-                    onDelete = { id ->
-                        viewModel.deleteSeed(id)
-                        selectedSeedForEdit = null
-                    }
-                )
-            }
+                    )
+                }
 
             if (createButtonClicked) {
                 CreateSeedModal(
