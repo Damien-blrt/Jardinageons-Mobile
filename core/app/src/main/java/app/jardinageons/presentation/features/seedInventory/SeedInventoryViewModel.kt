@@ -36,6 +36,7 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
     private val _averageGerminationTime = MutableStateFlow(0)
     val averageGerminationTime: StateFlow<Int> = _averageGerminationTime.asStateFlow()
 
+    
     init {
         loadSeeds()
     }
