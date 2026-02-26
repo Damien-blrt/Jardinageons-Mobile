@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.material3.TextField
 import app.jardinageons.presentation.features.seedInventory.SeedInventoryScreen
 import app.jardinageons.presentation.theme.JardinageonsTheme
 

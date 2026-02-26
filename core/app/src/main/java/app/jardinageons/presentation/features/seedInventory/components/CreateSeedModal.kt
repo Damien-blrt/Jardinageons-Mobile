@@ -25,6 +25,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.jardinageons.presentation.components.ButtonComponent
 import app.jardinageons.presentation.components.ButtonVariant
+import app.jardinageons.presentation.components.InputComponent
+import app.jardinageons.presentation.components.InputType
 import app.jardinageons.presentation.features.seedInventory.SeedRequest
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -40,72 +42,34 @@ fun CreateSeedModal(
     var quantity by remember { mutableStateOf("") }
     var germination by remember { mutableStateOf("") }
     var dateExpiration by remember { mutableStateOf("") }
-
-    var showDatePicker by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState()
-
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Créer une variété") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(
+                InputComponent(
                     value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Nom") }
+                    label = "Nom de Légume",
+                    onValueChange = { name = it }
                 )
-                OutlinedTextField(
+                InputComponent(
                     value = quantity,
-                    onValueChange = { quantity = it },
-                    label = { Text("Quantité") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    label = "Quantité",
+                    variant = InputType.NUMBER,
+                    onValueChange = { quantity = it }
                 )
-                OutlinedTextField(
+                InputComponent(
                     value = germination,
-                    onValueChange = { germination = it },
-                    label = { Text("Temps de germination (en jours)") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    label = "Temps de germination(en nombre de jours)",
+                    variant = InputType.NUMBER,
+                    onValueChange = { germination = it }
                 )
-
-                /**
-                 * doc: https://developer.android.com/develop/ui/compose/components/datepickers?hl=fr
-                 */
-                OutlinedTextField(
+                InputComponent(
                     value = dateExpiration,
-                    onValueChange = { },
-                    label = { Text("Date d'expiration") },
-                    readOnly = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { showDatePicker = true },
-                    enabled = false,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        disabledTextColor = Color.Black,
-                        disabledBorderColor = Color.Gray,
-                        disabledLabelColor = Color.Gray
-                    )
+                    label = "Date d'expiration",
+                    variant = InputType.DATE,
+                    onValueChange = { dateExpiration = it }
                 )
-
-                if (showDatePicker) {
-                    DatePickerDialog(
-                        onDismissRequest = { showDatePicker = false },
-                        confirmButton = {
-                            TextButton(onClick = {
-                                val selectedDate = datePickerState.selectedDateMillis?.let {
-                                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(
-                                        Date(
-                                            it
-                                        )
-                                    )
-                                } ?: ""
-                                dateExpiration = selectedDate
-                                showDatePicker = false
-                            }) { Text("OK") }
-                        }
-                    ) {
-                        DatePicker(state = datePickerState)
-                    }
-                }
             }
         },
         confirmButton = {

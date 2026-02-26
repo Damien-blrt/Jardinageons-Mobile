@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import app.jardinageons.data.models.Seed
 import app.jardinageons.presentation.components.ButtonComponent
 import app.jardinageons.presentation.components.ButtonVariant
+import app.jardinageons.presentation.components.InputComponent
+import app.jardinageons.presentation.components.InputType
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -59,71 +61,26 @@ fun EditSeedModal(
         title = { Text("Modifier la variété") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(
+                InputComponent(
                     value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Nom") }
+                    label = "Nom de Légume",
+                    onValueChange = { name = it }
                 )
-                OutlinedTextField(
+                InputComponent(
                     value = quantity,
-                    onValueChange = { quantity = it },
-                    label = { Text("Quantité") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    label = "Quantité",
+                    onValueChange = { quantity = it }
                 )
-                OutlinedTextField(
+                InputComponent(
                     value = germination,
-                    onValueChange = { germination = it },
-                    label = { Text("Temps de germination (en jours)") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    label = "Temps de germination(en nombre de jours)",
+                    onValueChange = { germination = it }
                 )
-
-
-                /**
-                 * doc: https://developer.android.com/develop/ui/compose/components/datepickers?hl=fr
-                 */
-                OutlinedTextField(
+                InputComponent(
                     value = dateExpiration,
-                    onValueChange = { },
-                    label = { Text("Date d'expiration") },
-                    readOnly = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { showDatePicker = true },
-                    enabled = false,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        disabledTextColor = Color.Black,
-                        disabledBorderColor = Color.Gray,
-                        disabledLabelColor = Color.Gray
-                    )
-                )
-
-                if (showDatePicker) {
-                    DatePickerDialog(
-                        onDismissRequest = { showDatePicker = false },
-                        confirmButton = {
-                            TextButton(onClick = {
-                                val selectedDate = datePickerState.selectedDateMillis?.let {
-                                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(
-                                        Date(
-                                            it
-                                        )
-                                    )
-                                } ?: ""
-                                dateExpiration = selectedDate
-                                showDatePicker = false
-                            }) { Text("OK") }
-                        }
-                    ) {
-                        DatePicker(state = datePickerState)
-                    }
-                }
-                ButtonComponent(
-                    onClick = {
-                        showDeleteConfirmation = true
-                    },
-                    label = "Supprimer la variété",
-                    variant = ButtonVariant.DANGER,
-                    modifier = Modifier.fillMaxWidth()
+                    label = "Date d'expiration",
+                    variant = InputType.DATE,
+                    onValueChange = { dateExpiration = it }
                 )
 
                 if (showDeleteConfirmation) {
