@@ -1,5 +1,6 @@
 package app.jardinageons.presentation.features.seedInventory
 
+import AnimatedPlantLoader
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -86,13 +87,11 @@ fun SeedInventoryScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
-
+        if (isLoading) {
+            AnimatedPlantLoader( )
+        } else {
         Box(modifier = Modifier.fillMaxSize()) {
-            if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            } else {
+
                 /**
                  * La syntaxe selectedSeedForEdit?.let a été générée par une IA. De ce que j'ai compris
                  * c'est une manière plus sécurisée de vérifier si une variable est pas nulle avant de l'utiliser
