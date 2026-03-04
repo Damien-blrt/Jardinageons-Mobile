@@ -4,8 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.TextField
-import app.jardinageons.presentation.features.seedInventory.SeedInventoryScreen
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import app.jardinageons.presentation.features.login.LoginScreen
+import app.jardinageons.presentation.features.register.RegisterScreen
 import app.jardinageons.presentation.theme.JardinageonsTheme
 
 class MainActivity : ComponentActivity() {
@@ -14,7 +17,26 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             JardinageonsTheme {
-                SeedInventoryScreen()
+                val navController = rememberNavController()
+
+                NavHost(navController = navController, startDestination = "login") {
+                    composable("login") {
+                        LoginScreen(
+                            onRegisterClick = {
+                                navController.navigate("register")
+                            }
+                        )
+                    }
+                    composable("register") {
+                        RegisterScreen(
+                            onLoginClick = {
+                                navController.navigate("login") {
+                                    popUpTo("login") { inclusive = true }
+                                }
+                            }
+                        )
+                    }
+                }
             }
         }
     }

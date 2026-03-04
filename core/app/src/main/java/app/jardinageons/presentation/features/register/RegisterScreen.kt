@@ -1,4 +1,4 @@
-package app.jardinageons.presentation.features.login
+package app.jardinageons.presentation.features.register
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
@@ -14,9 +14,10 @@ import app.jardinageons.presentation.components.InputComponent
 import app.jardinageons.presentation.components.InputType
 
 @Composable
-fun LoginScreen(onRegisterClick: () -> Unit = {}) {
-    var login by remember { mutableStateOf("") }
+fun RegisterScreen(onLoginClick: () -> Unit = {}) {
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -26,17 +27,17 @@ fun LoginScreen(onRegisterClick: () -> Unit = {}) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Bienvenue",
+            text = "Créer un compte",
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 48.dp)
         )
 
         InputComponent(
-            value = login,
-            label = "Identifiant",
+            value = email,
+            label = "Adresse email",
             variant = InputType.CLASSIC,
-            onValueChange = { login = it },
+            onValueChange = { email = it },
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
         )
 
@@ -45,20 +46,28 @@ fun LoginScreen(onRegisterClick: () -> Unit = {}) {
             label = "Mot de passe",
             variant = InputType.CLASSIC,
             onValueChange = { password = it },
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+        )
+
+        InputComponent(
+            value = confirmPassword,
+            label = "Confirmer le mot de passe",
+            variant = InputType.CLASSIC,
+            onValueChange = { confirmPassword = it },
             modifier = Modifier.fillMaxWidth().padding(bottom = 48.dp)
         )
 
         ButtonComponent(
-            label = "Se connecter",
+            label = "S'inscrire",
             variant = ButtonVariant.PRIMARY,
             onClick = { /* Juste de l'affichage */ },
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
         )
 
         ButtonComponent(
-            label = "Créer un compte",
+            label = "J'ai déjà un compte",
             variant = ButtonVariant.SECONDARY,
-            onClick = onRegisterClick,
+            onClick = onLoginClick,
             modifier = Modifier.fillMaxWidth()
         )
     }
