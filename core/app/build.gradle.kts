@@ -10,12 +10,16 @@ android {
     namespace = "app.jardinageons"
     compileSdk = 36
 
+    val weatherApiKey = project.findProperty("WEATHER_API_KEY") as? String ?: "\"\""
     defaultConfig {
         applicationId = "app.jardinageons"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
+
+        val weatherApiKey = project.findProperty("WEATHER_API_KEY") as? String ?: "\"\""
+        buildConfigField("String", "WEATHER_API_KEY", "\"5da798346ae0491fd016780434f68258\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -73,4 +77,5 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
+    implementation("com.google.android.gms:play-services-location:21.2.0")
 }

@@ -15,6 +15,8 @@ object RetrofitClient {
         BuildConfig.API_TOKEN
     }
 
+    private const val BASE_URL_WEATHER = "https://api.openweathermap.org/"
+
     /*
         """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
             Supprimez les commentaires quand tout le monde a vu
@@ -50,6 +52,18 @@ object RetrofitClient {
             .build()
 
         retrofit.create(IVegetableService::class.java)
+    }
+
+    val weatherService: IWeatherService by lazy {
+        val okHttpClient = OkHttpClient.Builder().build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL_WEATHER) // On utilise l'URL d'OpenWeatherMap
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create()) // Gson pour traduire le JSON
+            .build()
+
+        retrofit.create(IWeatherService::class.java)
     }
 
 }
