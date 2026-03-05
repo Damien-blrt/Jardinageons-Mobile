@@ -88,8 +88,8 @@ fun AnimatedPlantLoader(
                     drawOval(
                         color = plantColor,
                         topLeft = center.copy(
-                            x = center.x - leafSize,
-                            y = topY
+                            x = center.x - (leafSize+50),
+                            y = topY-20
                         ),
                         size = Size(leafSize, leafSize * 1.5f)
                     )
@@ -99,8 +99,8 @@ fun AnimatedPlantLoader(
                     drawOval(
                         color = plantColor,
                         topLeft = center.copy(
-                            x = center.x,
-                            y = topY
+                            x = center.x+50,
+                            y = topY-20
                         ),
                         size = Size(leafSize, leafSize * 1.5f)
                     )

@@ -10,7 +10,6 @@ import kotlinx.coroutines.withContext
 
 class SeedRepository(private val _service: ISeedService) {
     suspend fun getSeeds(pageIndex: Int, countPerPage: Int): PagedResponse<Seed> {
-        delay(20000)
         return withContext(Dispatchers.IO) {
             _service.listSeeds(pageIndex, countPerPage)
         }
