@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -30,7 +31,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,7 +45,13 @@ import app.jardinageons.presentation.features.seedInventory.components.CreateSee
 import app.jardinageons.presentation.features.seedInventory.components.EditSeedModal
 import app.jardinageons.presentation.features.seedInventory.components.SeedCard
 import app.jardinageons.presentation.features.seedInventory.components.StatCard
-import kotlinx.coroutines.launch
+import app.jardinageons.presentation.theme.Blue
+import app.jardinageons.presentation.theme.DarkGreen
+import app.jardinageons.presentation.theme.DarkOrange
+import app.jardinageons.presentation.theme.LightBlue
+import app.jardinageons.presentation.theme.LightGreen
+import app.jardinageons.presentation.theme.LightOrange
+import app.jardinageons.presentation.theme.Purple
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -70,7 +76,7 @@ fun SeedInventoryScreen(
     //doc : https://developer.android.com/develop/ui/compose/side-effects
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { message ->
-            when(message){
+            when (message) {
                 Event.addSuccess -> snackbarHostState.showSnackbar("Graine ajoutée avec succès")
                 Event.modifiedSuccess -> snackbarHostState.showSnackbar("Graine modifiée avec succès")
                 Event.deleteSuccess -> snackbarHostState.showSnackbar("Graine supprimée avec succès")
@@ -207,10 +213,7 @@ fun SeedInventoryScreen(
                             value = "${seedList.size}",
                             label = "Variétés",
                             gradient = Brush.verticalGradient(
-                                listOf(
-                                    Color(0xFF66BB6A),
-                                    Color(0xFF43A047)
-                                )
+                                listOf(LightGreen, DarkGreen)
                             ),
                             modifier = Modifier.weight(1f)
                         )
@@ -219,10 +222,7 @@ fun SeedInventoryScreen(
                             value = "${totalSeeds}",
                             label = "Graines total",
                             gradient = Brush.verticalGradient(
-                                listOf(
-                                    Color(0xFFFFA726),
-                                    Color(0xFFFB8C00)
-                                )
+                                listOf(LightOrange, DarkOrange)
                             ),
                             modifier = Modifier.weight(1f)
                         )
@@ -231,10 +231,7 @@ fun SeedInventoryScreen(
                             value = "${averageGerminationTime}j",
                             label = "Germination moy.",
                             gradient = Brush.verticalGradient(
-                                listOf(
-                                    Color(0xFF7E8FF7),
-                                    Color(0xFFAB47BC)
-                                )
+                                listOf(LightBlue, Purple)
                             ),
                             modifier = Modifier.weight(1f)
                         )
@@ -268,6 +265,7 @@ fun SeedInventoryScreen(
                     .size(64.dp),
                 shape = RoundedCornerShape(100.dp),
                 contentPadding = PaddingValues(0.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Blue)
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,

@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import app.jardinageons.presentation.theme.Blue
 
 enum class ButtonVariant {
     PRIMARY,
@@ -25,7 +26,7 @@ fun ButtonComponent(
     Button(
         onClick = onClick,
         colors = when (variant) {
-            ButtonVariant.PRIMARY -> ButtonDefaults.buttonColors(containerColor = Color.Blue)
+            ButtonVariant.PRIMARY -> ButtonDefaults.buttonColors(containerColor = Blue)
             ButtonVariant.SECONDARY -> ButtonDefaults.buttonColors(containerColor = Color.Transparent)
             ButtonVariant.DANGER -> ButtonDefaults.buttonColors(containerColor = Color.Red)
         },
