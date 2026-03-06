@@ -33,7 +33,16 @@ fun HomeScreen(
                 .padding(padding),
             contentPadding = PaddingValues(bottom = 24.dp) // Un peu plus de marge en bas
         ) {
-            // 1. Section Image du Jardin
+            // 1. Section Météo
+            item {
+                SectionTitle("Météo en direct")
+                WeatherWidget(
+                    viewModel = weatherViewModel,
+                    modifier = Modifier.padding(top = 0.dp)
+                )
+            }
+
+            // 2. Section Image du Jardin
             item {
                 SectionTitle("Mon Jardin")
                 Box(
@@ -55,14 +64,6 @@ fun HomeScreen(
                 }
             }
 
-            // 2. Section Météo
-            item {
-                SectionTitle("Météo en direct")
-                WeatherWidget(
-                    viewModel = weatherViewModel,
-                    modifier = Modifier.padding(top = 0.dp)
-                )
-            }
 
             // 3. Section Astuces du Jardinier (Nouveau Design !)
             item {
