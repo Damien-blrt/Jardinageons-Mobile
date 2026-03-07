@@ -14,7 +14,10 @@ import app.jardinageons.presentation.components.InputComponent
 import app.jardinageons.presentation.components.InputType
 
 @Composable
-fun RegisterScreen(onLoginClick: () -> Unit = {}) {
+fun RegisterScreen(
+    onLoginClick: () -> Unit = {},
+    onRegisterClick: (String, String) -> Unit = { _, _ -> }
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -60,7 +63,11 @@ fun RegisterScreen(onLoginClick: () -> Unit = {}) {
         ButtonComponent(
             label = "S'inscrire",
             variant = ButtonVariant.PRIMARY,
-            onClick = { /* Juste de l'affichage */ },
+            onClick = {
+                if (password == confirmPassword && email.isNotEmpty() && password.isNotEmpty()) {
+                    onRegisterClick(email, password)
+                }
+            },
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
         )
 

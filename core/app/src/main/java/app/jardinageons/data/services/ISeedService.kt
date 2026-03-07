@@ -15,7 +15,7 @@ import retrofit2.http.Query
 
 interface ISeedService {
     @InjectAuth
-    @GET("v1/Seed")
+    @GET("api/v1/Seed")
     suspend fun listSeeds(
         @Query("pageIndex") pageIndex: Int,
         @Query("countPerPage") countPerPage: Int

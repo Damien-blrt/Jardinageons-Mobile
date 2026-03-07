@@ -14,7 +14,10 @@ import app.jardinageons.presentation.components.InputComponent
 import app.jardinageons.presentation.components.InputType
 
 @Composable
-fun LoginScreen(onRegisterClick: () -> Unit = {}) {
+fun LoginScreen(
+    onLoginClick: (String, String) -> Unit = { _, _ -> },
+    onRegisterClick: () -> Unit = {}
+) {
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -34,7 +37,7 @@ fun LoginScreen(onRegisterClick: () -> Unit = {}) {
 
         InputComponent(
             value = login,
-            label = "Identifiant",
+            label = "Emailx",
             variant = InputType.CLASSIC,
             onValueChange = { login = it },
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
@@ -51,7 +54,7 @@ fun LoginScreen(onRegisterClick: () -> Unit = {}) {
         ButtonComponent(
             label = "Se connecter",
             variant = ButtonVariant.PRIMARY,
-            onClick = { /* Juste de l'affichage */ },
+            onClick = { onLoginClick(login, password) },
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
         )
 
