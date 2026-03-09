@@ -1,34 +1,80 @@
 package app.jardinageons.data.repositories
-
-import app.jardinageons.data.models.PagedResponse
+import app.jardinageons.data.database.JardinageonsDatabase
+import app.jardinageons.data.entities.SeedEntity
 import app.jardinageons.data.models.Seed
 import app.jardinageons.data.services.ISeedService
 import app.jardinageons.presentation.features.seedInventory.SeedRequest
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
+/*passer le dao par constructeur pour contrôler l’instanciation dans un autre thread ?
+private val _repository: SeedRepository = SeedRepository(seedService, JardinageonsDatabase.getInstance().seedDao())
+ */
 class SeedRepository(private val _service: ISeedService) {
-    suspend fun getSeeds(pageIndex: Int, countPerPage: Int): PagedResponse<Seed> {
-        return withContext(Dispatchers.IO) {
-            _service.listSeeds(pageIndex, countPerPage)
+    private val pageIndex = 0;
+    private val countPerPage = 10;
+
+    private val db by lazy { JardinageonsDatabase.getInstance()}
+    private val seedDao by lazy { db.seedDao()}
+
+    fun getSeedsFlow(): Flow<List<Seed>> {
+        return seedDao.loadSeeds().map { entities ->
+            entities.map { entity ->
+                Seed(
+                    id = entity.id,
+                    name = entity.name,
+                    quantity = entity.quantity,
+                    germinationTime = entity.germinationTime,
+                    description = entity.description,
+                    vegetableId = entity.vegetableId,
+                    expiryDate = entity.expiryDate
+                )
+            }
         }
     }
+    suspend fun refreshSeeds(pageIndex: Int = this.pageIndex, countPerPage: Int = this.countPerPage) {
+        withContext(Dispatchers.IO) {
+            try {
+                val response = _service.listSeeds(pageIndex, countPerPage)
 
+                // On transforme toute la liste d'un coup
+                val entities = response.items.map {
+                    SeedEntity(
+                        id = it.id,
+                        name = it.name,
+                        quantity = it.quantity,
+                        germinationTime = it.germinationTime,
+                        description = it.description,
+                        vegetableId = it.vegetableId,
+                        expiryDate = it.expiryDate
+                    )
+                }
+                seedDao.insertSeeds(entities)
+            } catch (e: Exception) {
+                throw e
+            }
+        }
+    }
     suspend fun createSeed(seed: SeedRequest) {
         return withContext(Dispatchers.IO) {
             _service.createSeed(seed)
+            refreshSeeds(pageIndex, countPerPage)
         }
     }
 
     suspend fun deleteSeed(id: Long) {
         return withContext(Dispatchers.IO) {
             _service.deleteSeed(id)
+            refreshSeeds(pageIndex, countPerPage)
         }
     }
 
     suspend fun updateSeed(id: Long, seed: Seed) {
         return withContext(Dispatchers.IO) {
             _service.updateSeed(seed.id, seed)
+            refreshSeeds(pageIndex, countPerPage)
         }
     }
 }

@@ -2,6 +2,7 @@ package app.jardinageons.presentation.features.seedInventory
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -63,6 +65,7 @@ fun SeedInventoryScreen(
     val seedList by viewModel.seeds.collectAsState()
     val totalSeeds by viewModel.totalSeeds.collectAsState()
     val averageGerminationTime by viewModel.averageGerminationTime.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     var selectedSeedForEdit by remember { mutableStateOf<Seed?>(null) }
     var createButtonClicked by remember { mutableStateOf<Boolean>(false) }
@@ -98,6 +101,18 @@ fun SeedInventoryScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
+            if (isLoading) {
+                //a remplacer par la custom
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator(color = DarkGreen)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text("Chargement de l'inventaire...")
+                }
+            } else {
             /**
              * La syntaxe selectedSeedForEdit?.let a été générée par une IA. De ce que j'ai compris
              * c'est une manière plus sécurisée de vérifier si une variable est pas nulle avant de l'utiliser
@@ -273,6 +288,7 @@ fun SeedInventoryScreen(
                     tint = Color.White,
                     modifier = Modifier.size(30.dp)
                 )
+            }
             }
         }
     }

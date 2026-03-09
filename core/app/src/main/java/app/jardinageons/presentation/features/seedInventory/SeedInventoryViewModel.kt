@@ -7,12 +7,14 @@ import app.jardinageons.data.models.PagedResponse
 import app.jardinageons.data.models.Seed
 import app.jardinageons.data.repositories.SeedRepository
 import app.jardinageons.data.services.RetrofitClient.seedService
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -38,7 +40,6 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
     ViewModel() {
 
     private val _seeds = MutableStateFlow<List<Seed>>(emptyList())
-
     val seeds: StateFlow<List<Seed>> = _seeds.asStateFlow()
 
     private val _totalSeeds = MutableStateFlow(0)
@@ -47,26 +48,54 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
     private val _averageGerminationTime = MutableStateFlow(0)
     val averageGerminationTime: StateFlow<Int> = _averageGerminationTime.asStateFlow()
 
+    // true tant que les données locales n'ont pas encore été chargées
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    // true pendant le chargement réseau
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     // Flow pour les événements UI (Snackbar et plus si besoin)
     // source : https://bytegoblin.io/blog/how-to-handle-single-event-in-jetpack-compose.mdx
     private val _uiEvent = MutableSharedFlow<Event>()
     val uiEvent = _uiEvent.asSharedFlow()
 
     init {
-        loadSeeds()
+        observeLocalSeeds()
+        viewModelScope.launch {
+            refreshFromNetwork()
+        }
     }
 
-    private fun loadSeeds() {
+    private fun observeLocalSeeds() {
+        viewModelScope.launch {
+            _repository.getSeedsFlow().collect { localSeeds ->
+                val normalized = withContext(Dispatchers.Default) {
+                    normalizeSeeds(localSeeds)
+                }
+
+                _seeds.value = normalized
+                getTotalSeeds(normalized)
+                getAverageGerminationTime(normalized)
+                if (_isLoading.value) {
+                    _isLoading.value = false
+                }
+
+                Log.d("SeedInventoryViewModel", "Données locales chargées : ${localSeeds.size} graines")
+            }
+        }
+    }
+
+    private fun refreshFromNetwork() {
         viewModelScope.launch {
             try {
-                val response = _repository.getSeeds(0, 10)
-                normalizeSeeds(response)
-                getTotalSeeds(response)
-                getAverageGerminationTime(response)
+                _isRefreshing.value = true
+                _repository.refreshSeeds()
             } catch (e: Exception) {
-                Log.e("SeedInventoryViewModel", "Error loading seeds", e)
+                Log.e("SeedInventoryViewModel", "Error refreshing seeds", e)
             } finally {
-                Log.d("SeedInventoryViewModel", "Loading seeds completed")
+                _isRefreshing.value = false
             }
         }
     }
@@ -76,7 +105,6 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
         viewModelScope.launch {
             try {
                 _repository.createSeed(seed)
-                loadSeeds()
                 _uiEvent.emit(Event.addSuccess)
             } catch (e: Exception) {
                 _uiEvent.emit(Event.addError)
@@ -87,10 +115,10 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
         }
     }
 
-    private fun normalizeSeeds(response: PagedResponse<Seed>) {
+    private fun normalizeSeeds(items: List<Seed>): List<Seed> {
         val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
-        val cleanList = response.items.map { seed ->
+        return items.map { seed ->
             /*
             doc: https://medium.com/@arshamjafari85/mastering-date-and-time-handling-in-kotlin-35cc1192d226
              */
@@ -106,17 +134,16 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
                 expiryDate = formattedDate
             )
         }
-        _seeds.value = cleanList
     }
 
-    private fun getTotalSeeds(response: PagedResponse<Seed>) {
-        _totalSeeds.value = response.items.sumOf { it.quantity }
+    private fun getTotalSeeds(items: List<Seed>) {
+        _totalSeeds.value = items.sumOf { it.quantity }
     }
 
-    private fun getAverageGerminationTime(response: PagedResponse<Seed>) {
-        if (response.items.isNotEmpty()) {
-            val total = response.items.sumOf { it.germinationTime }
-            _averageGerminationTime.value = total / response.items.size
+    private fun getAverageGerminationTime(items: List<Seed>) {
+        if (items.isNotEmpty()) {
+            val total = items.sumOf { it.germinationTime }
+            _averageGerminationTime.value = total / items.size
         }
     }
 
@@ -124,7 +151,6 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
         viewModelScope.launch {
             try {
                 _repository.deleteSeed(id)
-                loadSeeds()
                 _uiEvent.emit(Event.deleteSuccess)
             } catch (e: Exception) {
                 _uiEvent.emit(Event.deleteError)
@@ -137,7 +163,6 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
         viewModelScope.launch {
             try {
                 _repository.updateSeed(id, seed)
-                loadSeeds()
                 _uiEvent.emit(Event.modifiedSuccess)
             } catch (e: Exception) {
                 _uiEvent.emit(Event.modifiedError)
