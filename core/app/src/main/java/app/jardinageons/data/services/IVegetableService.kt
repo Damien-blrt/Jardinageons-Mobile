@@ -7,9 +7,9 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface IVegetableService {
-    @GET("api/v1/Vegetable")
-    fun listVegetables(
+    @GET("v1/Vegetable")
+    suspend fun listVegetables(
         @Query("pageIndex") pageIndex: Int,
         @Query("countPerPage") countPerPage: Int
-    ): Call<PagedResponse<Vegetable>>
+    ): PagedResponse<Vegetable>
 }
