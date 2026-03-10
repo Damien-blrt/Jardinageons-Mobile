@@ -17,12 +17,20 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        val localProperties = gradleLocalProperties(rootDir, providers)
+        
+        buildConfigField(
+            "String", 
+            "WEATHER_API_KEY", 
+            "\"${localProperties.getProperty("weatherApiKey") ?: ""}\""
+        )
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField(
             "String",
             "API_TOKEN",
-            "\"${gradleLocalProperties(rootDir, providers).getProperty("apiToken")}\""
+            "\"${localProperties.getProperty("apiToken") ?: ""}\""
         )
     }
 
@@ -73,4 +81,5 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
+    implementation("com.google.android.gms:play-services-location:21.2.0")
 }

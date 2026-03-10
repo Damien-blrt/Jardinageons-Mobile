@@ -54,6 +54,8 @@ import app.jardinageons.presentation.theme.LightBlue
 import app.jardinageons.presentation.theme.LightGreen
 import app.jardinageons.presentation.theme.LightOrange
 import app.jardinageons.presentation.theme.Purple
+import app.jardinageons.presentation.features.weather.WeatherViewModel
+import app.jardinageons.presentation.features.weather.components.WeatherWidget
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -71,6 +73,8 @@ fun SeedInventoryScreen(
     val isLoading by viewModel.isLoading.collectAsState()
 
     var searchedSeedName by remember { mutableStateOf("") }
+    //val weatherViewModel: WeatherViewModel = viewModel()
+
     //doc : https://developer.android.com/develop/ui/compose/components/snackbar?hl=fr
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -181,6 +185,13 @@ fun SeedInventoryScreen(
                 )
             }
             LazyColumn(Modifier.padding(10.dp)) {
+
+                //item {
+                    //WeatherWidget(
+                        //viewModel = weatherViewModel,
+                        //modifier = Modifier.padding(bottom = 16.dp)
+                    //)
+                //}
                 item {
                     OutlinedTextField(
                         value = searchedSeedName,
