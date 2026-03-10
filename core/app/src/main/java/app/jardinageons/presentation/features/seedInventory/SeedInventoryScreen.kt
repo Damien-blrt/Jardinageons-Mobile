@@ -98,9 +98,9 @@ fun SeedInventoryScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         if (isLoading) {
-            AnimatedPlantLoader( )
+            AnimatedPlantLoader()
         } else {
-        Box(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = Modifier.fillMaxSize()) {
 
                 /**
                  * La syntaxe selectedSeedForEdit?.let a été générée par une IA. De ce que j'ai compris
@@ -179,114 +179,115 @@ fun SeedInventoryScreen(
                                 expiryDate = isoDate
                             )
 
-                        viewModel.createSeed(request)
-                        createButtonClicked = false
-                    }
-                )
-            }
-            LazyColumn(Modifier.padding(10.dp)) {
+                            viewModel.createSeed(request)
+                            createButtonClicked = false
+                        }
+                    )
+                }
+                LazyColumn(Modifier.padding(10.dp)) {
 
-                //item {
+                    //item {
                     //WeatherWidget(
-                        //viewModel = weatherViewModel,
-                        //modifier = Modifier.padding(bottom = 16.dp)
+                    //viewModel = weatherViewModel,
+                    //modifier = Modifier.padding(bottom = 16.dp)
                     //)
-                //}
-                item {
-                    OutlinedTextField(
-                        value = searchedSeedName,
-                        onValueChange = { newText ->
-                            searchedSeedName = newText
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = null,
-                                tint = Color.Gray
-                            )
-                        },
-                        label = { Text("Rechercher une variété") },
-                        shape = RoundedCornerShape(15.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color.Green,
-                            focusedLeadingIconColor = Color.Green
-                        ),
-                        modifier = Modifier
-                            .padding(bottom = 8.dp)
-                            .fillMaxWidth()
-                    )
-                }
-                item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        StatCard(
-                            value = "${seedList.size}",
-                            label = "Variétés",
-                            gradient = Brush.verticalGradient(
-                                listOf(LightGreen, DarkGreen)
+                    //}
+                    item {
+                        OutlinedTextField(
+                            value = searchedSeedName,
+                            onValueChange = { newText ->
+                                searchedSeedName = newText
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Search,
+                                    contentDescription = null,
+                                    tint = Color.Gray
+                                )
+                            },
+                            label = { Text("Rechercher une variété") },
+                            shape = RoundedCornerShape(15.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color.Green,
+                                focusedLeadingIconColor = Color.Green
                             ),
-                            modifier = Modifier.weight(1f)
-                        )
-
-                        StatCard(
-                            value = "${totalSeeds}",
-                            label = "Graines total",
-                            gradient = Brush.verticalGradient(
-                                listOf(LightOrange, DarkOrange)
-                            ),
-                            modifier = Modifier.weight(1f)
-                        )
-
-                        StatCard(
-                            value = "${averageGerminationTime}j",
-                            label = "Germination moy.",
-                            gradient = Brush.verticalGradient(
-                                listOf(LightBlue, Purple)
-                            ),
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier
+                                .padding(bottom = 8.dp)
+                                .fillMaxWidth()
                         )
                     }
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            StatCard(
+                                value = "${seedList.size}",
+                                label = "Variétés",
+                                gradient = Brush.verticalGradient(
+                                    listOf(LightGreen, DarkGreen)
+                                ),
+                                modifier = Modifier.weight(1f)
+                            )
+
+                            StatCard(
+                                value = "${totalSeeds}",
+                                label = "Graines total",
+                                gradient = Brush.verticalGradient(
+                                    listOf(LightOrange, DarkOrange)
+                                ),
+                                modifier = Modifier.weight(1f)
+                            )
+
+                            StatCard(
+                                value = "${averageGerminationTime}j",
+                                label = "Germination moy.",
+                                gradient = Brush.verticalGradient(
+                                    listOf(LightBlue, Purple)
+                                ),
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(12.dp))
+                    }
+                    item {
+                        Text(
+                            text = "Mon inventaire", fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                    items(items = seedList) { seed ->
+                        SeedCard(seed = seed, color = Color(0xFFFB2B37), onClick = {
+                            selectedSeedForEdit = seed
+                        })
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
                 }
-                item {
-                    Spacer(modifier = Modifier.height(12.dp))
-                }
-                item {
-                    Text(
-                        text = "Mon inventaire", fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold
+                Button(
+                    onClick = { createButtonClicked = true },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(24.dp)
+                        .size(64.dp),
+                    shape = RoundedCornerShape(100.dp),
+                    contentPadding = PaddingValues(0.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Blue)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(30.dp)
                     )
                 }
-                item {
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-                items(items = seedList) { seed ->
-                    SeedCard(seed = seed, color = Color(0xFFFB2B37), onClick = {
-                        selectedSeedForEdit = seed
-                    })
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-
-            }
-            Button(
-                onClick = { createButtonClicked = true },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(24.dp)
-                    .size(64.dp),
-                shape = RoundedCornerShape(100.dp),
-                contentPadding = PaddingValues(0.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Blue)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(30.dp)
-                )
             }
         }
     }
