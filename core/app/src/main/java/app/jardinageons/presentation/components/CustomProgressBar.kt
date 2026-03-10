@@ -15,6 +15,10 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.dp
 
+
+/*
+Ce code est grandement inspirée d'une IA et adaptée à notre projet
+*/
 @Composable
 fun AnimatedPlantLoader(
     modifier: Modifier = Modifier,
