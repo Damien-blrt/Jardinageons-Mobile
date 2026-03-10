@@ -52,6 +52,10 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
     private val _uiEvent = MutableSharedFlow<Event>()
     val uiEvent = _uiEvent.asSharedFlow()
 
+    //doc du loading : https://medium.com/@madhav2002/how-do-you-show-a-loading-state-in-your-ui-android-kotlin-e1382a7103f9
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     init {
         loadSeeds()
     }
@@ -67,6 +71,7 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
                 Log.e("SeedInventoryViewModel", "Error loading seeds", e)
             } finally {
                 Log.d("SeedInventoryViewModel", "Loading seeds completed")
+                _isLoading.value = false
             }
         }
     }
