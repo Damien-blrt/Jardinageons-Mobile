@@ -1,5 +1,6 @@
 package app.jardinageons.data.repositories
-import app.jardinageons.data.database.JardinageonsDatabase
+import android.util.Log
+import app.jardinageons.data.dao.SeedDao
 import app.jardinageons.data.entities.SeedEntity
 import app.jardinageons.data.models.Seed
 import app.jardinageons.data.services.ISeedService
@@ -9,15 +10,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
-/*passer le dao par constructeur pour contrôler l’instanciation dans un autre thread ?
-private val _repository: SeedRepository = SeedRepository(seedService, JardinageonsDatabase.getInstance().seedDao())
- */
-class SeedRepository(private val _service: ISeedService) {
+
+class SeedRepository(private val _service: ISeedService,
+    private  val seedDao: SeedDao) {
     private val pageIndex = 0;
     private val countPerPage = 10;
 
-    private val db by lazy { JardinageonsDatabase.getInstance()}
-    private val seedDao by lazy { db.seedDao()}
 
     fun getSeedsFlow(): Flow<List<Seed>> {
         return seedDao.loadSeeds().map { entities ->
@@ -39,7 +37,6 @@ class SeedRepository(private val _service: ISeedService) {
             try {
                 val response = _service.listSeeds(pageIndex, countPerPage)
 
-                // On transforme toute la liste d'un coup
                 val entities = response.items.map {
                     SeedEntity(
                         id = it.id,
@@ -51,7 +48,9 @@ class SeedRepository(private val _service: ISeedService) {
                         expiryDate = it.expiryDate
                     )
                 }
+                seedDao.clearSeeds()
                 seedDao.insertSeeds(entities)
+                Log.i("Repository", "Seeds refresh")
             } catch (e: Exception) {
                 throw e
             }

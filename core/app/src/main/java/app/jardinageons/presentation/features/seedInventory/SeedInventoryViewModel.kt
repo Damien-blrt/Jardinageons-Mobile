@@ -3,6 +3,7 @@ package app.jardinageons.presentation.features.seedInventory
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.jardinageons.data.database.JardinageonsDatabase
 import app.jardinageons.data.models.PagedResponse
 import app.jardinageons.data.models.Seed
 import app.jardinageons.data.repositories.SeedRepository
@@ -36,7 +37,9 @@ enum class Event {
     deleteError,
 }
 
-class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepository(seedService)) :
+class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepository(seedService,
+    JardinageonsDatabase.getInstance().seedDao()
+)) :
     ViewModel() {
 
     private val _seeds = MutableStateFlow<List<Seed>>(emptyList())
@@ -74,7 +77,6 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
                 val normalized = withContext(Dispatchers.Default) {
                     normalizeSeeds(localSeeds)
                 }
-
                 _seeds.value = normalized
                 getTotalSeeds(normalized)
                 getAverageGerminationTime(normalized)
@@ -82,7 +84,7 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
                     _isLoading.value = false
                 }
 
-                Log.d("SeedInventoryViewModel", "Données locales chargées : ${localSeeds.size} graines")
+                Log.i("SeedInventoryViewModel", "Données locales chargées : ${localSeeds.size} graines")
             }
         }
     }
@@ -101,7 +103,7 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
     }
 
     fun createSeed(seed: SeedRequest) {
-        Log.d("SeedInventoryViewModel", "Creating seed: $seed")
+        Log.i("SeedInventoryViewModel", "Creating seed: $seed")
         viewModelScope.launch {
             try {
                 _repository.createSeed(seed)
@@ -110,7 +112,7 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
                 _uiEvent.emit(Event.addError)
                 Log.e("SeedInventoryViewModel", "Error creating seed.", e)
             } finally {
-                Log.d("SeedInventoryViewModel", "Seed Created.")
+                Log.i("SeedInventoryViewModel", "Seed Created.")
             }
         }
     }
