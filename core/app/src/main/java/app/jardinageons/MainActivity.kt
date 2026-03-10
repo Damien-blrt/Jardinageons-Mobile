@@ -16,8 +16,10 @@ import kotlinx.coroutines.withContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import app.jardinageons.presentation.features.home.HomeScreen
 import app.jardinageons.presentation.features.login.LoginScreen
 import app.jardinageons.presentation.features.register.RegisterScreen
+import app.jardinageons.presentation.components.AppNavGraph
 import app.jardinageons.presentation.features.seedInventory.SeedInventoryScreen
 import app.jardinageons.presentation.theme.JardinageonsTheme
 
@@ -41,7 +43,7 @@ class MainActivity : ComponentActivity() {
                                         )
                                         withContext(Dispatchers.Main) {
                                             if (response.isSuccessful) {
-                                                navController.navigate("seed_inventory")
+                                                navController.navigate("home")
                                             } else {
                                                 Toast.makeText(this@MainActivity, "Erreur de connexion : ${response.code()}", Toast.LENGTH_SHORT).show()
                                             }
@@ -90,8 +92,9 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
-                    composable("seed_inventory") {
-                        SeedInventoryScreen()
+                    composable("home") {
+                        HomeScreen()
+                            AppNavGraph()
                     }
                 }
             }
