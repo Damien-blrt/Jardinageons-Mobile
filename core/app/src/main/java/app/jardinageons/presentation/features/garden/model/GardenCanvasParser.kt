@@ -12,7 +12,7 @@ fun parseGardenCanvasModel(rawJson: String?): GardenCanvasModel? {
     if (rawJson.isNullOrBlank()) return null
 
     return runCatching {
-        val root = JsonParser.parseString(rawJson).asJsonObject
+        val root = JsonParser().parse(rawJson).asJsonObject
         val canvasObject = root.getAsObject("canvas")
 
         val width = (canvasObject?.getAsFloatOrNull("width") ?: DEFAULT_CANVAS_WIDTH)

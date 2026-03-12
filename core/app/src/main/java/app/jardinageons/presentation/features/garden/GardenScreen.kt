@@ -49,6 +49,7 @@ import app.jardinageons.R
 import app.jardinageons.presentation.features.garden.model.GardenCanvasModel
 import app.jardinageons.presentation.features.garden.model.GardenElement
 import coil.compose.AsyncImage
+import java.text.Normalizer
 import kotlin.math.min
 
 private const val WEB_BASE_URL =
@@ -59,6 +60,7 @@ fun GardenScreen(
     viewModel: GardenViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val selectedCanvas = uiState.selectedCanvas
 
     if (uiState.isLoading) {
         Box(
@@ -109,7 +111,7 @@ fun GardenScreen(
             }
         }
 
-        if (uiState.selectedCanvas == null) {
+        if (selectedCanvas == null) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -122,7 +124,7 @@ fun GardenScreen(
             }
         } else {
             GardenPlanCanvas(
-                canvasModel = uiState.selectedCanvas,
+                canvasModel = selectedCanvas,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -316,14 +318,16 @@ private fun rememberTextureBrushes(): Map<String, ShaderBrush> {
     }
 }
 
-private fun resolveVegetableImage(imageUrl: String?, vegetableName: String?): String? {
+private fun resolveVegetableImage(imageUrl: String?, vegetableName: String?): Any {
+    resolveLocalVegetableDrawable(imageUrl, vegetableName)?.let { return it }
+
     val raw = imageUrl?.trim().orEmpty()
     if (raw.isNotEmpty()) {
         return toAbsoluteWebUrl(raw)
     }
 
     val name = vegetableName?.trim().orEmpty()
-    if (name.isEmpty()) return null
+    if (name.isEmpty()) return R.drawable.vegetable_default
 
     return "$WEB_BASE_URL/image/${Uri.encode(name)}.png"
 }
@@ -335,4 +339,56 @@ private fun toAbsoluteWebUrl(raw: String): String {
         raw.startsWith("/") -> "$WEB_BASE_URL$raw"
         else -> "$WEB_BASE_URL/$raw"
     }
+}
+
+private val LOCAL_VEGETABLE_BY_KEY: Map<String, Int> = mapOf(
+    "aubergine" to R.drawable.veg_aubergine,
+    "betterave" to R.drawable.veg_betterave,
+    "carotte" to R.drawable.veg_carotte,
+    "carottes" to R.drawable.veg_carotte,
+    "chou_fleur" to R.drawable.veg_chou_fleur,
+    "courgette" to R.drawable.veg_courgette,
+    "epinard" to R.drawable.veg_epinard,
+    "laitue" to R.drawable.veg_laitue,
+    "oignon" to R.drawable.veg_oignon,
+    "oignons" to R.drawable.veg_oignon,
+    "patate" to R.drawable.veg_patate,
+    "poireau" to R.drawable.veg_poireau,
+    "poivron" to R.drawable.veg_poivron,
+    "radis" to R.drawable.vegetable_default,
+    "salade" to R.drawable.veg_salade,
+    "tomate" to R.drawable.veg_tomate,
+    "tomates" to R.drawable.veg_tomate
+)
+
+private fun resolveLocalVegetableDrawable(imageUrl: String?, vegetableName: String?): Int? {
+    val nameKey = normalizeImageKey(vegetableName)
+    if (nameKey.isNotEmpty()) {
+        LOCAL_VEGETABLE_BY_KEY[nameKey]?.let { return it }
+    }
+
+    val filename = imageUrl
+        ?.substringAfterLast('/')
+        ?.substringBefore('?')
+        ?.substringBefore('#')
+        ?.substringBeforeLast('.')
+        .orEmpty()
+    if (filename.isNotEmpty()) {
+        val fileKey = normalizeImageKey(filename)
+        LOCAL_VEGETABLE_BY_KEY[fileKey]?.let { return it }
+    }
+
+    return null
+}
+
+private fun normalizeImageKey(raw: String?): String {
+    if (raw.isNullOrBlank()) return ""
+
+    val noAccents = Normalizer.normalize(raw, Normalizer.Form.NFD)
+        .replace("\\p{M}+".toRegex(), "")
+
+    return noAccents
+        .lowercase()
+        .replace("[^a-z0-9]+".toRegex(), "_")
+        .trim('_')
 }
