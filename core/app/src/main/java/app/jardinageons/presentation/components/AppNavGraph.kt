@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import app.jardinageons.presentation.features.seedInventory.SeedInventoryScreen
+import app.jardinageons.presentation.features.statPage.StatScreen
 
 @Composable
 fun AppNavGraph(modifier: Modifier = Modifier) {
@@ -52,6 +53,8 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                     // TODO(HistoryScreen): remplacer cet écran temporaire par HistoryScreen()
                     PlaceholderScreen(title = "Historique")
                 }
+
+                BottomBarRoutes.STATS -> StatScreen()
             }
         }
     }
