@@ -7,6 +7,7 @@ import com.google.gson.JsonParser
 private const val DEFAULT_CANVAS_WIDTH = 900f
 private const val DEFAULT_CANVAS_HEIGHT = 650f
 private val CONTROL_TYPES = setOf("delete-parcelle", "resize-parcelle")
+private val NONE_TEXTURE_VALUES = setOf("none", "null", "aucun", "vide")
 
 fun parseGardenCanvasModel(rawJson: String?): GardenCanvasModel? {
     if (rawJson.isNullOrBlank()) return null
@@ -21,7 +22,7 @@ fun parseGardenCanvasModel(rawJson: String?): GardenCanvasModel? {
         val height = (canvasObject?.getAsFloatOrNull("height") ?: DEFAULT_CANVAS_HEIGHT)
             .takeIf { it > 0f }
             ?: DEFAULT_CANVAS_HEIGHT
-        val defaultTexture = root.getAsStringOrNull("texture")
+        val defaultTexture = normalizeTextureKey(root.getAsStringOrNull("texture"))
 
         val elements = buildList {
             root.getAsArray("elements")?.forEach { element ->
@@ -54,7 +55,7 @@ private fun parseGardenElement(
                 y = obj.getAsFloatOrNull("y") ?: return null,
                 width = obj.getAsFloatOrNull("width") ?: return null,
                 height = obj.getAsFloatOrNull("height") ?: return null,
-                textureKey = obj.getAsStringOrNull("textureKey") ?: defaultTexture
+                textureKey = normalizeTextureKey(obj.getAsStringOrNull("textureKey")) ?: defaultTexture
             )
         }
 
@@ -64,7 +65,7 @@ private fun parseGardenElement(
                 y = obj.getAsFloatOrNull("y") ?: return null,
                 width = obj.getAsFloatOrNull("width") ?: return null,
                 height = obj.getAsFloatOrNull("height") ?: return null,
-                textureKey = obj.getAsStringOrNull("textureKey") ?: defaultTexture
+                textureKey = normalizeTextureKey(obj.getAsStringOrNull("textureKey")) ?: defaultTexture
             )
         }
 
@@ -83,7 +84,7 @@ private fun parseGardenElement(
             GardenElement.Trait(
                 points = points,
                 width = obj.getAsFloatOrNull("width") ?: 4f,
-                textureKey = obj.getAsStringOrNull("textureKey") ?: defaultTexture
+                textureKey = normalizeTextureKey(obj.getAsStringOrNull("textureKey")) ?: defaultTexture
             )
         }
 
@@ -116,3 +117,9 @@ private fun JsonObject.getAsFloatOrNull(key: String): Float? =
 
 private fun JsonElement.asJsonObjectOrNull(): JsonObject? =
     runCatching { asJsonObject }.getOrNull()
+
+private fun normalizeTextureKey(raw: String?): String? {
+    val value = raw?.trim()?.lowercase().orEmpty()
+    if (value.isEmpty() || value in NONE_TEXTURE_VALUES) return null
+    return raw.trim()
+}

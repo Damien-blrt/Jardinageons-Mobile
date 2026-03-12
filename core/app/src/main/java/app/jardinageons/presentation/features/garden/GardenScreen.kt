@@ -14,19 +14,25 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilterChip
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenu
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,12 +61,19 @@ import kotlin.math.min
 private const val WEB_BASE_URL =
     "https://codefirst.iut.uca.fr/kubernetes/iut-inf63-projets-etudiants-jardinageons/jardinageons"
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GardenScreen(
     viewModel: GardenViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val selectedCanvas = uiState.selectedCanvas
+    val selectedGardenName = uiState.gardens
+        .firstOrNull { it.id == uiState.selectedGardenId }
+        ?.name
+        ?: uiState.gardens.firstOrNull()?.name
+        .orEmpty()
+    var isGardenMenuExpanded by rememberSaveable { mutableStateOf(false) }
 
     if (uiState.isLoading) {
         Box(
@@ -101,13 +114,37 @@ fun GardenScreen(
             style = MaterialTheme.typography.titleLarge
         )
 
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(uiState.gardens, key = { it.id }) { garden ->
-                FilterChip(
-                    selected = uiState.selectedGardenId == garden.id,
-                    onClick = { viewModel.selectGarden(garden.id) },
-                    label = { Text(garden.name) }
-                )
+        ExposedDropdownMenuBox(
+            expanded = isGardenMenuExpanded,
+            onExpandedChange = { isGardenMenuExpanded = !isGardenMenuExpanded },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                value = selectedGardenName,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Jardin") },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isGardenMenuExpanded)
+                },
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth()
+            )
+
+            ExposedDropdownMenu(
+                expanded = isGardenMenuExpanded,
+                onDismissRequest = { isGardenMenuExpanded = false }
+            ) {
+                uiState.gardens.forEach { garden ->
+                    DropdownMenuItem(
+                        text = { Text(garden.name) },
+                        onClick = {
+                            viewModel.selectGarden(garden.id)
+                            isGardenMenuExpanded = false
+                        }
+                    )
+                }
             }
         }
 
@@ -187,23 +224,9 @@ private fun GardenPlanCanvas(
             val offsetYPx = ((containerHeightPx - drawingHeightPx) / 2f).coerceAtLeast(0f)
 
             Canvas(modifier = Modifier.fillMaxSize()) {
-                val baseBrush = canvasModel.defaultTextureKey?.let(textureBrushes::get)
-
                 withTransform({
                     translate(left = offsetXPx, top = offsetYPx)
                 }) {
-                    if (baseBrush != null) {
-                        drawRect(
-                            brush = baseBrush,
-                            size = androidx.compose.ui.geometry.Size(drawingWidthPx, drawingHeightPx)
-                        )
-                    } else {
-                        drawRect(
-                            color = Color(0xFFF5F8EE),
-                            size = androidx.compose.ui.geometry.Size(drawingWidthPx, drawingHeightPx)
-                        )
-                    }
-
                     parcelles.forEach { parcelle ->
                         val topLeft = androidx.compose.ui.geometry.Offset(
                             parcelle.x * scale,
