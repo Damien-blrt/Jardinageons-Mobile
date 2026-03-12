@@ -33,7 +33,6 @@ class SeedRepository(private val _service: ISeedService,
         }
     }
     suspend fun refreshSeeds(pageIndex: Int = this.pageIndex, countPerPage: Int = this.countPerPage) {
-        withContext(Dispatchers.IO) {
             try {
                 val response = _service.listSeeds(pageIndex, countPerPage)
 
@@ -48,13 +47,12 @@ class SeedRepository(private val _service: ISeedService,
                         expiryDate = it.expiryDate
                     )
                 }
-                seedDao.clearSeeds()
                 seedDao.insertSeeds(entities)
                 Log.i("Repository", "Seeds refresh")
             } catch (e: Exception) {
                 throw e
             }
-        }
+
     }
     suspend fun createSeed(seed: SeedRequest) {
         return withContext(Dispatchers.IO) {

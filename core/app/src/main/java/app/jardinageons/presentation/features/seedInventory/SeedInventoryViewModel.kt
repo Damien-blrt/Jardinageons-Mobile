@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.ZonedDateTime
@@ -65,15 +66,19 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
     val uiEvent = _uiEvent.asSharedFlow()
 
     init {
-        observeLocalSeeds()
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
+            observeLocalSeeds()
+        }
+        viewModelScope.launch(Dispatchers.IO) {
             refreshFromNetwork()
         }
+
     }
 
     private fun observeLocalSeeds() {
-        viewModelScope.launch {
-            _repository.getSeedsFlow().collect { localSeeds ->
+        viewModelScope.launch{
+            _repository.getSeedsFlow()
+                .collect { localSeeds ->
                 val normalized = withContext(Dispatchers.Default) {
                     normalizeSeeds(localSeeds)
                 }
@@ -90,7 +95,7 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
     }
 
     private fun refreshFromNetwork() {
-        viewModelScope.launch {
+        viewModelScope.launch{
             try {
                 _isRefreshing.value = true
                 _repository.refreshSeeds()
@@ -116,6 +121,7 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
             }
         }
     }
+
 
     private fun normalizeSeeds(items: List<Seed>): List<Seed> {
         val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
