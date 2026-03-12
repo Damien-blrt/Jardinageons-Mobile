@@ -3,6 +3,7 @@ package app.jardinageons.data.services
 import app.jardinageons.data.annotations.InjectAuth
 import app.jardinageons.data.models.PagedResponse
 import app.jardinageons.data.models.Vegetable
+import app.jardinageons.presentation.features.vegetable.VegetableRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
