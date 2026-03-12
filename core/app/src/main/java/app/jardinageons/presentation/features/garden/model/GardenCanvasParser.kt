@@ -121,5 +121,5 @@ private fun JsonElement.asJsonObjectOrNull(): JsonObject? =
 private fun normalizeTextureKey(raw: String?): String? {
     val value = raw?.trim()?.lowercase().orEmpty()
     if (value.isEmpty() || value in NONE_TEXTURE_VALUES) return null
-    return raw.trim()
+    return value
 }
