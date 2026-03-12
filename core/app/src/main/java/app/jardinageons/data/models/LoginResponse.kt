@@ -1,5 +1,10 @@
 package app.jardinageons.data.models
 
+import com.google.gson.annotations.SerializedName
+
 data class LoginResponse(
-    val token: String
+    @SerializedName("tokenType") val tokenType: String,
+    @SerializedName("accessToken") val accessToken: String,
+    @SerializedName("expiresIn") val expiresIn: Long,
+    @SerializedName("refreshToken") val refreshToken: String
 )

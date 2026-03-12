@@ -4,6 +4,7 @@ import app.jardinageons.data.models.LoginRequest
 import app.jardinageons.data.models.LoginResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface ILoginQService {
@@ -12,4 +13,5 @@ interface ILoginQService {
 
     @POST("authentication/register")
     suspend fun register(@Body request: LoginRequest): Response<Unit>
+
 }

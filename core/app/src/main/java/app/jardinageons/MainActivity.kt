@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.datastore.core.MultiProcessDataStoreFactory
 import androidx.lifecycle.lifecycleScope
 import app.jardinageons.data.models.LoginRequest
 import app.jardinageons.data.services.RetrofitClient
@@ -16,12 +17,16 @@ import kotlinx.coroutines.withContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import app.jardinageons.data.models.Tokens
+import app.jardinageons.data.storage.TokenSerializer
+import app.jardinageons.data.storage.tokenDataStore
 import app.jardinageons.presentation.features.home.HomeScreen
 import app.jardinageons.presentation.features.login.LoginScreen
 import app.jardinageons.presentation.features.register.RegisterScreen
 import app.jardinageons.presentation.components.AppNavGraph
 import app.jardinageons.presentation.features.seedInventory.SeedInventoryScreen
 import app.jardinageons.presentation.theme.JardinageonsTheme
+import java.io.File
 
 class MainActivity : ComponentActivity() {
 
@@ -43,6 +48,17 @@ class MainActivity : ComponentActivity() {
                                         )
                                         withContext(Dispatchers.Main) {
                                             if (response.isSuccessful) {
+                                                val loginData = response.body()
+                                                if (loginData != null) {
+                                                    this@MainActivity.tokenDataStore.updateData { currentTokens ->
+                                                        Tokens(
+                                                            tokenType = loginData.tokenType,
+                                                            accessToken = loginData.accessToken,
+                                                            expiresIn = loginData.expiresIn,
+                                                            refreshToken = loginData.refreshToken
+                                                    )
+                                                }
+                                            }
                                                 navController.navigate("home")
                                             } else {
                                                 Toast.makeText(this@MainActivity, "Erreur de connexion : ${response.code()}", Toast.LENGTH_SHORT).show()

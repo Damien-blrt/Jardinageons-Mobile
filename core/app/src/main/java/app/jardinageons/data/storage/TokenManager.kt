@@ -1,42 +1,45 @@
 package app.jardinageons.data.storage
 
-import android.content.Context
-import android.content.SharedPreferences
-import androidx.core.content.edit
-import app.jardinageons.data.models.AuthResponse
+import androidx.datastore.core.CorruptionException
+import androidx.datastore.core.MultiProcessDataStoreFactory
+import androidx.datastore.core.Serializer
 import app.jardinageons.data.models.Tokens
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import android.content.Context
+import androidx.datastore.dataStore
+import java.io.File
+import java.io.InputStream
+import java.io.OutputStream
 
-class TokenManager(context: Context) {
-    private val preferences : SharedPreferences = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
+// Top-level extension property for DataStore singleton
+val Context.tokenDataStore by dataStore(
+    fileName = "tokens.pb",
+    serializer = TokenSerializer
+)
 
-    fun saveTokens(tokens: AuthResponse){
-        preferences.edit {
-            putString("accessToken", tokens.accessToken)
-            putString("refreshToken", tokens.refreshToken)
-            putLong("expiresAt", System.currentTimeMillis() + tokens.expiresIn * 1000L)
+object TokenSerializer : Serializer<Tokens?> {
+
+    override val defaultValue: Tokens? = null
+
+    override suspend fun readFrom(input: InputStream): Tokens? =
+        try {
+            Json.decodeFromString<Tokens>(
+                input.readBytes().decodeToString()
+            )
+        } catch (serialization: SerializationException) {
+            throw CorruptionException("Unable to read Tokens", serialization)
         }
-    }
 
-    fun getAccessToken(): String?{
-        return preferences.getString("accessToken",null)
-    }
-
-    fun getRefreshToken(): String?{
-        return preferences.getString("refreshToken",null)
-    }
-
-    fun clearTokens(){
-        preferences.edit{clear()}
-    }
-
-    fun getTokens(): Tokens?{
-        val access = getAccessToken()
-        val refresh = getRefreshToken()
-        val expiresAt = preferences.getLong("expiresAt",0L)
-
-        if(access != null && refresh != null){
-            return Tokens(access, refresh, expiresAt)
+    override suspend fun writeTo(t: Tokens?, output: OutputStream) {
+        if (t != null) {
+            output.write(
+                Json.encodeToString(t)
+                    .encodeToByteArray()
+            )
+        } else {
+            // Write nothing, or an empty object if required by your structure
         }
-        return null
     }
 }

@@ -37,7 +37,7 @@ fun LoginScreen(
 
         InputComponent(
             value = login,
-            label = "Emailx",
+            label = "Email",
             variant = InputType.CLASSIC,
             onValueChange = { login = it },
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
