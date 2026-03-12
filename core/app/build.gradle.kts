@@ -82,4 +82,5 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation("com.google.android.gms:play-services-location:21.2.0")
+    implementation("io.coil-kt:coil-compose:2.7.0")
 }

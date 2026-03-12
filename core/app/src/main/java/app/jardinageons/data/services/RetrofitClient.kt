@@ -54,6 +54,20 @@ object RetrofitClient {
         retrofit.create(IVegetableService::class.java)
     }
 
+    val gardenService: IGardenService by lazy {
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor(tokenProvider))
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        retrofit.create(IGardenService::class.java)
+    }
+
     val weatherService: IWeatherService by lazy {
         val okHttpClient = OkHttpClient.Builder().build()
 
