@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.matchParentSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,10 +29,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,6 +60,7 @@ import kotlin.math.min
 
 private const val WEB_BASE_URL =
     "https://codefirst.iut.uca.fr/kubernetes/iut-inf63-projets-etudiants-jardinageons/jardinageons"
+private const val ROTATE_CANVAS_FOR_PORTRAIT = true
 
 @Composable
 fun GardenScreen(
@@ -112,15 +115,24 @@ fun GardenScreen(
         )
 
         Box(modifier = Modifier.fillMaxWidth()) {
+            val interactionSource = remember { MutableInteractionSource() }
+
             OutlinedTextField(
                 value = selectedGardenName,
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("Jardin") },
                 trailingIcon = { Text(if (isGardenMenuExpanded) "▲" else "▼") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { isGardenMenuExpanded = true }
+                    .matchParentSize()
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) { isGardenMenuExpanded = true }
             )
 
             DropdownMenu(
@@ -203,15 +215,17 @@ private fun GardenPlanCanvas(
         ) {
             val containerWidthPx = with(density) { maxWidth.toPx() }
             val containerHeightPx = with(density) { maxHeight.toPx() }
-            val scale = remember(containerWidthPx, containerHeightPx, canvasModel.width, canvasModel.height) {
+            val mapWidth = if (ROTATE_CANVAS_FOR_PORTRAIT) canvasModel.height else canvasModel.width
+            val mapHeight = if (ROTATE_CANVAS_FOR_PORTRAIT) canvasModel.width else canvasModel.height
+            val scale = remember(containerWidthPx, containerHeightPx, mapWidth, mapHeight) {
                 min(
-                    containerWidthPx / canvasModel.width,
-                    containerHeightPx / canvasModel.height
+                    containerWidthPx / mapWidth,
+                    containerHeightPx / mapHeight
                 ).coerceAtLeast(0.001f)
             }
 
-            val drawingWidthPx = canvasModel.width * scale
-            val drawingHeightPx = canvasModel.height * scale
+            val drawingWidthPx = mapWidth * scale
+            val drawingHeightPx = mapHeight * scale
             val offsetXPx = ((containerWidthPx - drawingWidthPx) / 2f).coerceAtLeast(0f)
             val offsetYPx = ((containerHeightPx - drawingHeightPx) / 2f).coerceAtLeast(0f)
 
@@ -220,13 +234,20 @@ private fun GardenPlanCanvas(
                     translate(left = offsetXPx, top = offsetYPx)
                 }) {
                     parcelles.forEach { parcelle ->
+                        val displayRect = toDisplayRect(
+                            x = parcelle.x,
+                            y = parcelle.y,
+                            width = parcelle.width,
+                            height = parcelle.height,
+                            canvasHeight = canvasModel.height
+                        )
                         val topLeft = androidx.compose.ui.geometry.Offset(
-                            parcelle.x * scale,
-                            parcelle.y * scale
+                            displayRect.x * scale,
+                            displayRect.y * scale
                         )
                         val size = androidx.compose.ui.geometry.Size(
-                            parcelle.width * scale,
-                            parcelle.height * scale
+                            displayRect.width * scale,
+                            displayRect.height * scale
                         )
                         val brush = parcelle.textureKey?.let(textureBrushes::get)
                         if (brush != null) {
@@ -243,13 +264,20 @@ private fun GardenPlanCanvas(
                     }
 
                     ellipses.forEach { ellipse ->
+                        val displayRect = toDisplayRect(
+                            x = ellipse.x,
+                            y = ellipse.y,
+                            width = ellipse.width,
+                            height = ellipse.height,
+                            canvasHeight = canvasModel.height
+                        )
                         val topLeft = androidx.compose.ui.geometry.Offset(
-                            ellipse.x * scale,
-                            ellipse.y * scale
+                            displayRect.x * scale,
+                            displayRect.y * scale
                         )
                         val size = androidx.compose.ui.geometry.Size(
-                            ellipse.width * scale,
-                            ellipse.height * scale
+                            displayRect.width * scale,
+                            displayRect.height * scale
                         )
                         val brush = ellipse.textureKey?.let(textureBrushes::get)
                         if (brush != null) {
@@ -268,8 +296,13 @@ private fun GardenPlanCanvas(
                     traits.forEach { trait ->
                         val path = Path().apply {
                             trait.points.forEachIndexed { index, point ->
-                                val x = point.x * scale
-                                val y = point.y * scale
+                                val displayPoint = toDisplayPoint(
+                                    x = point.x,
+                                    y = point.y,
+                                    canvasHeight = canvasModel.height
+                                )
+                                val x = displayPoint.x * scale
+                                val y = displayPoint.y * scale
                                 if (index == 0) moveTo(x, y) else lineTo(x, y)
                             }
                         }
@@ -293,11 +326,18 @@ private fun GardenPlanCanvas(
             }
 
             vegetables.forEach { vegetable ->
+                val displayRect = toDisplayRect(
+                    x = vegetable.x,
+                    y = vegetable.y,
+                    width = vegetable.width,
+                    height = vegetable.height,
+                    canvasHeight = canvasModel.height
+                )
                 val imageModel = resolveVegetableImage(vegetable.imageUrl, vegetable.name)
-                val xDp = with(density) { (offsetXPx + vegetable.x * scale).toDp() }
-                val yDp = with(density) { (offsetYPx + vegetable.y * scale).toDp() }
-                val widthDp = with(density) { (vegetable.width * scale).toDp() }
-                val heightDp = with(density) { (vegetable.height * scale).toDp() }
+                val xDp = with(density) { (offsetXPx + displayRect.x * scale).toDp() }
+                val yDp = with(density) { (offsetYPx + displayRect.y * scale).toDp() }
+                val widthDp = with(density) { (displayRect.width * scale).toDp() }
+                val heightDp = with(density) { (displayRect.height * scale).toDp() }
 
                 AsyncImage(
                     model = imageModel,
@@ -354,6 +394,47 @@ private fun toAbsoluteWebUrl(raw: String): String {
         raw.startsWith("/") -> "$WEB_BASE_URL$raw"
         else -> "$WEB_BASE_URL/$raw"
     }
+}
+
+private data class DisplayRect(
+    val x: Float,
+    val y: Float,
+    val width: Float,
+    val height: Float
+)
+
+private fun toDisplayRect(
+    x: Float,
+    y: Float,
+    width: Float,
+    height: Float,
+    canvasHeight: Float
+): DisplayRect {
+    if (!ROTATE_CANVAS_FOR_PORTRAIT) {
+        return DisplayRect(x = x, y = y, width = width, height = height)
+    }
+
+    return DisplayRect(
+        x = canvasHeight - (y + height),
+        y = x,
+        width = height,
+        height = width
+    )
+}
+
+private fun toDisplayPoint(
+    x: Float,
+    y: Float,
+    canvasHeight: Float
+): androidx.compose.ui.geometry.Offset {
+    if (!ROTATE_CANVAS_FOR_PORTRAIT) {
+        return androidx.compose.ui.geometry.Offset(x, y)
+    }
+
+    return androidx.compose.ui.geometry.Offset(
+        x = canvasHeight - y,
+        y = x
+    )
 }
 
 private val LOCAL_VEGETABLE_BY_KEY: Map<String, Int> = mapOf(
