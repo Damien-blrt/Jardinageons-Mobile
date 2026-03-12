@@ -3,6 +3,7 @@ package app.jardinageons.presentation.features.garden
 import android.net.Uri
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -18,11 +19,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExposedDropdownMenu
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -61,7 +59,6 @@ import kotlin.math.min
 private const val WEB_BASE_URL =
     "https://codefirst.iut.uca.fr/kubernetes/iut-inf63-projets-etudiants-jardinageons/jardinageons"
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GardenScreen(
     viewModel: GardenViewModel = viewModel()
@@ -114,27 +111,22 @@ fun GardenScreen(
             style = MaterialTheme.typography.titleLarge
         )
 
-        ExposedDropdownMenuBox(
-            expanded = isGardenMenuExpanded,
-            onExpandedChange = { isGardenMenuExpanded = !isGardenMenuExpanded },
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        Box(modifier = Modifier.fillMaxWidth()) {
             OutlinedTextField(
                 value = selectedGardenName,
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("Jardin") },
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isGardenMenuExpanded)
-                },
+                trailingIcon = { Text(if (isGardenMenuExpanded) "▲" else "▼") },
                 modifier = Modifier
-                    .menuAnchor()
                     .fillMaxWidth()
+                    .clickable { isGardenMenuExpanded = true }
             )
 
-            ExposedDropdownMenu(
+            DropdownMenu(
                 expanded = isGardenMenuExpanded,
-                onDismissRequest = { isGardenMenuExpanded = false }
+                onDismissRequest = { isGardenMenuExpanded = false },
+                modifier = Modifier.fillMaxWidth(0.92f)
             ) {
                 uiState.gardens.forEach { garden ->
                     DropdownMenuItem(
