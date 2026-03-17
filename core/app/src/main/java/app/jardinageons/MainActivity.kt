@@ -18,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.jardinageons.data.models.Tokens
+import app.jardinageons.data.storage.TokenManager
 import app.jardinageons.data.storage.TokenSerializer
 import app.jardinageons.data.storage.tokenDataStore
 import app.jardinageons.presentation.features.home.HomeScreen
@@ -33,6 +34,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Restaurer le token depuis le DataStore au démarrage
+        lifecycleScope.launch {
+            this@MainActivity.tokenDataStore.data.collect { tokens ->
+                TokenManager.accessToken = tokens?.accessToken
+                TokenManager.refreshToken = tokens?.refreshToken
+            }
+        }
+
         setContent {
             JardinageonsTheme {
                 val navController = rememberNavController()
@@ -50,15 +60,17 @@ class MainActivity : ComponentActivity() {
                                             if (response.isSuccessful) {
                                                 val loginData = response.body()
                                                 if (loginData != null) {
+                                                    TokenManager.accessToken = loginData.accessToken
+                                                    TokenManager.refreshToken = loginData.refreshToken
                                                     this@MainActivity.tokenDataStore.updateData { currentTokens ->
                                                         Tokens(
                                                             tokenType = loginData.tokenType,
                                                             accessToken = loginData.accessToken,
                                                             expiresIn = loginData.expiresIn,
                                                             refreshToken = loginData.refreshToken
-                                                    )
+                                                        )
+                                                    }
                                                 }
-                                            }
                                                 navController.navigate("home")
                                             } else {
                                                 Toast.makeText(this@MainActivity, "Erreur de connexion : ${response.code()}", Toast.LENGTH_SHORT).show()

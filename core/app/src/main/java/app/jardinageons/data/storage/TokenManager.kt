@@ -13,7 +13,6 @@ import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 
-// Top-level extension property for DataStore singleton
 val Context.tokenDataStore by dataStore(
     fileName = "tokens.pb",
     serializer = TokenSerializer
@@ -39,7 +38,14 @@ object TokenSerializer : Serializer<Tokens?> {
                     .encodeToByteArray()
             )
         } else {
-            // Write nothing, or an empty object if required by your structure
         }
     }
+}
+
+object TokenManager {
+    @Volatile
+    var accessToken: String? = null
+
+    @Volatile
+    var refreshToken: String? = null
 }
