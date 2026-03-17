@@ -15,6 +15,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import app.jardinageons.presentation.features.home.HomeScreen
 import app.jardinageons.presentation.features.seedInventory.SeedInventoryScreen
 import app.jardinageons.presentation.features.statPage.StatScreen
 
@@ -41,8 +42,7 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
         ) {
             when (selectedRoute) {
                 BottomBarRoutes.HOME -> {
-                    // TODO(HomeScreen): remplacer cet écran temporaire par HomeScreen()
-                    PlaceholderScreen(title = "Accueil")
+                    HomeScreen()
                 }
                 BottomBarRoutes.GARDEN -> {
                     // TODO(GardenScreen): remplacer cet écran temporaire par GardenScreen()

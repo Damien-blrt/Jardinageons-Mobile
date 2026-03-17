@@ -33,6 +33,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,7 +74,6 @@ fun SeedInventoryScreen(
     val isLoading by viewModel.isLoading.collectAsState()
 
     var searchedSeedName by remember { mutableStateOf("") }
-    //val weatherViewModel: WeatherViewModel = viewModel()
 
     //doc : https://developer.android.com/develop/ui/compose/components/snackbar?hl=fr
     val snackbarHostState = remember { SnackbarHostState() }
