@@ -28,12 +28,24 @@ import app.jardinageons.presentation.components.AppNavGraph
 import app.jardinageons.presentation.features.seedInventory.SeedInventoryScreen
 import app.jardinageons.presentation.theme.JardinageonsTheme
 import java.io.File
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.WorkManager
+import java.util.concurrent.TimeUnit
+import app.jardinageons.data.workers.SyncWorker
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val request = PeriodicWorkRequestBuilder<SyncWorker>(1, TimeUnit.HOURS).build()
+        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+            "syncTokens",
+            ExistingPeriodicWorkPolicy.KEEP,
+            request
+        )
 
         // Restaurer le token depuis le DataStore au démarrage
         lifecycleScope.launch {
