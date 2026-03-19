@@ -48,7 +48,6 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
 
     private val _totalSeeds = MutableStateFlow(0)
     val totalSeeds: StateFlow<Int> = _totalSeeds.asStateFlow()
-
     private val _averageGerminationTime = MutableStateFlow(0)
     val averageGerminationTime: StateFlow<Int> = _averageGerminationTime.asStateFlow()
 
@@ -102,7 +101,10 @@ class SeedInventoryViewModel(private val _repository: SeedRepository = SeedRepos
                 _isRefreshing.value = true
                 _repository.refreshSeeds()
             } catch (e: Exception) {
-                Log.e("SeedInventoryViewModel", "Error refreshing seeds", e)
+                _seeds.value = emptyList()
+                _totalSeeds.value = 0
+                _averageGerminationTime.value = 0
+                Log.e("SeedInventoryViewModel", "Error loading seeds", e)
             } finally {
                 _isRefreshing.value = false
                 _isLoading.value = false
