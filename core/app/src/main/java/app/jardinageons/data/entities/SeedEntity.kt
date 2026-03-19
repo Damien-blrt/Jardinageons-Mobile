@@ -6,10 +6,10 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "Seed")
 data class SeedEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    var name: String,
-    var quantity: Int,
-    var germinationTime: Int,
-    var description: String,
-    var vegetableId: Long?,
-    var expiryDate: String
+    val name: String,
+    val quantity: Int,
+    val germinationTime: Int,
+    val description: String,
+    val vegetableId: Long?,
+    val expiryDate: String
 )
