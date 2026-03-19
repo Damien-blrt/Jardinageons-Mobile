@@ -19,11 +19,11 @@ android {
         versionName = "1.0"
 
         val localProperties = gradleLocalProperties(rootDir, providers)
-        
+
         buildConfigField(
-            "String", 
-            "WEATHER_API_KEY", 
-            "\"${localProperties.getProperty("weatherApiKey") ?: ""}\""
+            "String",
+            "WEATHER_API_KEY",
+            "\"${localProperties.getProperty("WEATHER_API_KEY") ?: ""}\""
         )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
