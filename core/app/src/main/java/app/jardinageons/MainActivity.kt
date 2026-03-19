@@ -26,6 +26,7 @@ import app.jardinageons.presentation.features.login.LoginScreen
 import app.jardinageons.presentation.features.register.RegisterScreen
 import app.jardinageons.presentation.components.AppNavGraph
 import app.jardinageons.presentation.features.seedInventory.SeedInventoryScreen
+import app.jardinageons.presentation.features.vegetable.VegetableScreen
 import app.jardinageons.presentation.theme.JardinageonsTheme
 import java.io.File
 import androidx.work.PeriodicWorkRequestBuilder
