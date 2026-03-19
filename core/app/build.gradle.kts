@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.ksp)
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -23,7 +24,7 @@ android {
         buildConfigField(
             "String",
             "WEATHER_API_KEY",
-            "\"${localProperties.getProperty("weatherApiKey") ?: ""}\""
+            "\"${localProperties.getProperty("WEATHER_API_KEY") ?: ""}\""
         )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -67,6 +68,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.room.ktx)
+    ksp("androidx.room:room-compiler:2.6.1")
     implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

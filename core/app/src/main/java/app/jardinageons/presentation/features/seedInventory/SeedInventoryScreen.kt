@@ -3,6 +3,7 @@ package app.jardinageons.presentation.features.seedInventory
 import AnimatedPlantLoader
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -68,10 +70,10 @@ fun SeedInventoryScreen(
     val seedList by viewModel.seeds.collectAsState()
     val totalSeeds by viewModel.totalSeeds.collectAsState()
     val averageGerminationTime by viewModel.averageGerminationTime.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     var selectedSeedForEdit by remember { mutableStateOf<Seed?>(null) }
     var createButtonClicked by remember { mutableStateOf<Boolean>(false) }
-    val isLoading by viewModel.isLoading.collectAsState()
 
     var searchedSeedName by remember { mutableStateOf("") }
 
