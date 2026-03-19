@@ -21,7 +21,7 @@ import app.jardinageons.presentation.features.seedInventory.SeedInventoryScreen
 @Composable
 fun AppNavGraph(modifier: Modifier = Modifier) {
     var selectedRoute by rememberSaveable {
-        mutableStateOf(BottomBarRoutes.INVENTORY)
+        mutableStateOf(BottomBarRoutes.HOME)
     }
 
     Scaffold(
