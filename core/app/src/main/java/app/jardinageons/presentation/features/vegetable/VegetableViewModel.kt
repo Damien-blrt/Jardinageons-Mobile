@@ -7,7 +7,6 @@ import app.jardinageons.data.models.PagedResponse
 import app.jardinageons.data.models.Vegetable
 import app.jardinageons.data.repositories.VegetableRepository
 import app.jardinageons.data.services.RetrofitClient.vegetableService
-import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,20 +16,6 @@ import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
-data class VegetableRequest(
-    val name: String,
-    @SerializedName("germinationTime")
-    val germinationTime: Int,
-    val description: String,
-    @SerializedName("sowingStart")
-    val sowingStart: String,
-    @SerializedName("sowingEnd")
-    val sowingEnd: String,
-    @SerializedName("harvestStart")
-    val harvestStart: String,
-    @SerializedName("harvestEnd")
-    val harvestEnd: String
-)
 
 enum class Event {
     addSuccess, addError, modifiedSuccess, modifiedError, deleteSuccess, deleteError
@@ -72,16 +57,18 @@ class VegetableViewModel(
         }
     }
 
-    private fun normalizeVegetables(response: PagedResponse<Vegetable>) {
+    private fun formatDate(dateStr: String): String {
         val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        return try {
+            ZonedDateTime.parse(dateStr).format(formatter)
+        } catch (e: Exception) {
+            dateStr
+        }
+    }
+
+    private fun normalizeVegetables(response: PagedResponse<Vegetable>) {
+
         val cleanList = response.items.map { vegetable ->
-            fun formatDate(dateStr: String): String {
-                return try {
-                    ZonedDateTime.parse(dateStr).format(formatter)
-                } catch (e: Exception) {
-                    dateStr
-                }
-            }
             vegetable.copy(
                 name = vegetable.name.uppercase(),
                 sowingStart = formatDate(vegetable.sowingStart),

@@ -15,21 +15,21 @@ import retrofit2.http.Query
 
 interface IVegetableService {
     @InjectAuth
-    @GET("v1/Vegetable")
+    @GET("api/v1/Vegetable")
     suspend fun listVegetables(
         @Query("pageIndex") pageIndex: Int,
         @Query("countPerPage") countPerPage: Int
     ): PagedResponse<Vegetable>
 
     @InjectAuth
-    @POST("v1/Vegetable")
+    @POST("api/v1/Vegetable")
     suspend fun createVegetable(@Body vegetable: VegetableRequest): Vegetable
 
     @InjectAuth
-    @DELETE("v1/Vegetable/{id}")
+    @DELETE("api/v1/Vegetable/{id}")
     suspend fun deleteVegetable(@Path("id") id: Long): Response<Unit>
 
     @InjectAuth
-    @PUT("v1/Vegetable/{id}")
+    @PUT("api/v1/Vegetable/{id}")
     suspend fun updateVegetable(@Path("id") id: Long, @Body vegetable: Vegetable): Vegetable
 }
