@@ -15,12 +15,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import app.jardinageons.presentation.features.garden.GardenScreen
+import app.jardinageons.presentation.features.garden.GardenViewModel
 import app.jardinageons.presentation.features.home.HomeScreen
 import app.jardinageons.presentation.features.seedInventory.SeedInventoryScreen
 
 @Composable
 fun AppNavGraph(modifier: Modifier = Modifier) {
+    val gardenViewModel: GardenViewModel = viewModel()
     var selectedRoute by rememberSaveable {
         mutableStateOf(BottomBarRoutes.HOME)
     }
@@ -42,14 +45,16 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
         ) {
             when (selectedRoute) {
                 BottomBarRoutes.HOME -> {
-                    HomeScreen()
+                    HomeScreen(
+                        gardenViewModel = gardenViewModel,
+                        onGardenClick = { selectedRoute = BottomBarRoutes.GARDEN }
+                    )
                 }
                 BottomBarRoutes.GARDEN -> {
-                    GardenScreen()
+                    GardenScreen(viewModel = gardenViewModel)
                 }
                 BottomBarRoutes.INVENTORY -> SeedInventoryScreen()
                 BottomBarRoutes.HISTORY -> {
-                    // TODO(HistoryScreen): remplacer cet écran temporaire par HistoryScreen()
                     PlaceholderScreen(title = "Historique")
                 }
             }

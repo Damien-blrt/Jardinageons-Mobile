@@ -34,7 +34,6 @@ fun parseGardenCanvasModel(rawJson: String?): GardenCanvasModel? {
         GardenCanvasModel(
             width = width,
             height = height,
-            defaultTextureKey = defaultTexture,
             elements = elements
         )
     }.getOrNull()

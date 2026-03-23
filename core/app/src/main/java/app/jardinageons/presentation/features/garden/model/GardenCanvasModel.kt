@@ -3,7 +3,6 @@ package app.jardinageons.presentation.features.garden.model
 data class GardenCanvasModel(
     val width: Float,
     val height: Float,
-    val defaultTextureKey: String?,
     val elements: List<GardenElement>
 )
 

@@ -14,10 +14,4 @@ class GardenRepository(
             service.listGardens(pageIndex, countPerPage)
         }
     }
-
-    suspend fun getGarden(id: Long): Garden {
-        return withContext(Dispatchers.IO) {
-            service.getGarden(id)
-        }
-    }
 }
