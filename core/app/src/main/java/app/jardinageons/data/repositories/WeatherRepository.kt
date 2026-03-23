@@ -18,7 +18,7 @@ class WeatherRepository {
             val response = weatherService.getForecast(
                 lat = lat,
                 lon = lon,
-                apiKey = BuildConfig.WEATHER_API_KEY
+                apiKey = "5da798346ae0491fd016780434f68258"
             )
 
             var totalRain = 0.0

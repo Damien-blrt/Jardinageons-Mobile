@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -18,11 +20,11 @@ android {
         versionName = "1.0"
 
         val localProperties = gradleLocalProperties(rootDir, providers)
-        
+
         buildConfigField(
-            "String", 
-            "WEATHER_API_KEY", 
-            "\"${localProperties.getProperty("weatherApiKey") ?: ""}\""
+            "String",
+            "WEATHER_API_KEY",
+            "\"${localProperties.getProperty("WEATHER_API_KEY") ?: ""}\""
         )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -66,6 +68,9 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.room.ktx)
+    ksp("androidx.room:room-compiler:2.6.1")
+    implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -76,6 +81,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -83,4 +89,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation("com.google.android.gms:play-services-location:21.2.0")
     implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation(libs.androidx.navigation.compose)
+    implementation("androidx.datastore:datastore:1.2.1")
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 }

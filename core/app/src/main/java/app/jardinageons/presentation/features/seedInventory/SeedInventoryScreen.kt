@@ -3,6 +3,7 @@ package app.jardinageons.presentation.features.seedInventory
 import AnimatedPlantLoader
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,8 +19,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -33,6 +34,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,8 +56,6 @@ import app.jardinageons.presentation.theme.LightBlue
 import app.jardinageons.presentation.theme.LightGreen
 import app.jardinageons.presentation.theme.LightOrange
 import app.jardinageons.presentation.theme.Purple
-import app.jardinageons.presentation.features.weather.WeatherViewModel
-import app.jardinageons.presentation.features.weather.components.WeatherWidget
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -67,13 +67,12 @@ fun SeedInventoryScreen(
     val seedList by viewModel.seeds.collectAsState()
     val totalSeeds by viewModel.totalSeeds.collectAsState()
     val averageGerminationTime by viewModel.averageGerminationTime.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     var selectedSeedForEdit by remember { mutableStateOf<Seed?>(null) }
     var createButtonClicked by remember { mutableStateOf<Boolean>(false) }
-    val isLoading by viewModel.isLoading.collectAsState()
 
     var searchedSeedName by remember { mutableStateOf("") }
-    //val weatherViewModel: WeatherViewModel = viewModel()
 
     //doc : https://developer.android.com/develop/ui/compose/components/snackbar?hl=fr
     val snackbarHostState = remember { SnackbarHostState() }
@@ -89,8 +88,6 @@ fun SeedInventoryScreen(
                 Event.addError -> snackbarHostState.showSnackbar("Erreur : graine non ajoutée")
                 Event.deleteError -> snackbarHostState.showSnackbar("Erreur : graine non supprimée")
             }
-
-
         }
     }
 

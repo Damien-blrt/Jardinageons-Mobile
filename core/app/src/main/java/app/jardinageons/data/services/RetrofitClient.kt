@@ -1,8 +1,10 @@
 package app.jardinageons.data.services
 
-import app.jardinageons.BuildConfig
 import app.jardinageons.data.interceptors.AuthInterceptor
+import app.jardinageons.data.interceptors.TokenAuthenticator
+import app.jardinageons.data.storage.TokenManager
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -10,9 +12,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 object RetrofitClient {
 
     private const val BASE_URL =
-        "https://codefirst.iut.uca.fr/kubernetes/iut-inf63-projets-etudiants-jardinageons/jardinageons/api/"
+        "https://codefirst.iut.uca.fr/kubernetes/iut-inf63-projets-etudiants-jardinageons/jardinageons/"
     val tokenProvider: () -> String? = {
-        BuildConfig.API_TOKEN
+        TokenManager.accessToken
     }
 
     private const val BASE_URL_WEATHER = "https://api.openweathermap.org/"
@@ -26,6 +28,7 @@ object RetrofitClient {
 
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(tokenProvider))
+            .authenticator(TokenAuthenticator())
             .build()
 
         val retrofit = Retrofit.Builder() // Crée un constructeur Retrofit
@@ -40,9 +43,29 @@ object RetrofitClient {
         // on pourra appeler seedService.listSeeds(...)
     }
 
+
+
+    val loginQService: ILoginQService by lazy {
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        retrofit.create(ILoginQService::class.java)
+    }
+
     val vegetableService: IVegetableService by lazy {
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(tokenProvider))
+            .authenticator(TokenAuthenticator())
             .build()
 
         val retrofit = Retrofit.Builder()
@@ -57,6 +80,7 @@ object RetrofitClient {
     val gardenService: IGardenService by lazy {
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(tokenProvider))
+            .authenticator(TokenAuthenticator())
             .build()
 
         val retrofit = Retrofit.Builder()
