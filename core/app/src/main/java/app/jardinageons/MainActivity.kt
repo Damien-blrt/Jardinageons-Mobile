@@ -34,6 +34,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
 import app.jardinageons.data.workers.SyncWorker
+import app.jardinageons.data.workers.WateringWorker
 
 class MainActivity : ComponentActivity() {
 
@@ -41,11 +42,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val request = PeriodicWorkRequestBuilder<SyncWorker>(1, TimeUnit.HOURS).build()
+        val syncWorkRequest = PeriodicWorkRequestBuilder<SyncWorker>(1, TimeUnit.HOURS).build()
         WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
             "syncTokens",
             ExistingPeriodicWorkPolicy.KEEP,
-            request
+            syncWorkRequest
+        )
+
+        val wateringWorkRequest = PeriodicWorkRequestBuilder<WateringWorker>(3, TimeUnit.DAYS).build()
+        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+            "wateringReminders",
+            ExistingPeriodicWorkPolicy.KEEP,
+            wateringWorkRequest
         )
 
         // Restaurer le token depuis le DataStore au démarrage

@@ -8,7 +8,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-
 object RetrofitClient {
 
     private const val BASE_URL =
@@ -19,31 +18,18 @@ object RetrofitClient {
 
     private const val BASE_URL_WEATHER = "https://api.openweathermap.org/"
 
-    /*
-        """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-            Supprimez les commentaires quand tout le monde a vu
-        """""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-     */
-    val seedService: ISeedService by lazy { // Crée une propriété seedService de type ISeedService initialisée seulement à la première utilisation
-
+    val seedService: ISeedService by lazy {
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(tokenProvider))
             .authenticator(TokenAuthenticator())
             .build()
-
-        val retrofit = Retrofit.Builder() // Crée un constructeur Retrofit
-            .baseUrl(BASE_URL) // Définit l'URL de base de l API, tous les endpoints
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
-            // Ajoute un convertisseur JSON pour transformer les objets Kotlin en JSON et inversement
-            .build() // Construit l'instance Retrofit
-
+            .build()
         retrofit.create(ISeedService::class.java)
-        // Crée automatiquement une implémentation de l'interface ISeedService
-        // on pourra appeler seedService.listSeeds(...)
     }
-
-
 
     val loginQService: ILoginQService by lazy {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
@@ -52,55 +38,60 @@ object RetrofitClient {
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .build()
-
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
         retrofit.create(ILoginQService::class.java)
     }
 
-    val harvestService: HarvestService by lazy{
+    val harvestService: HarvestService by lazy {
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(tokenProvider))
             .authenticator(TokenAuthenticator())
             .build()
-
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
         retrofit.create(HarvestService::class.java)
     }
-    val vegetableService: IVegetableService by lazy{
+
+    val vegetableService: IVegetableService by lazy {
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(tokenProvider))
             .authenticator(TokenAuthenticator())
             .build()
-
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
         retrofit.create(IVegetableService::class.java)
+    }
+
+    val growService: IGrowService by lazy {
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor(tokenProvider))
+            .authenticator(TokenAuthenticator())
+            .build()
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        retrofit.create(IGrowService::class.java)
     }
 
     val weatherService: IWeatherService by lazy {
         val okHttpClient = OkHttpClient.Builder().build()
-
         val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL_WEATHER) // On utilise l'URL d'OpenWeatherMap
+            .baseUrl(BASE_URL_WEATHER)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create()) // Gson pour traduire le JSON
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
-
         retrofit.create(IWeatherService::class.java)
     }
-
 }
