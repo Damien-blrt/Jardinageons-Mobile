@@ -1,4 +1,9 @@
 package app.jardinageons.data.models
 
-class Harvest {
-}
+data class Harvest (
+    val id: Long,
+    val plantId: Long,
+    val date: String,
+    val quantity: Int,
+    val description: String
+    )
