@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -148,21 +149,25 @@ fun HarvestScreen(viewModel: HarvestViewModel = viewModel()) {
                                 .padding(vertical = 16.dp),
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            StatCard(
-                                value = "${filteredHarvests.size}",
-                                label = "Récoltes",
-                                gradient = Brush.verticalGradient(
-                                    listOf(LightGreen, DarkGreen)
-                                )
-                            )
+                                StatCard(
+                                    value = "${filteredHarvests.size}",
+                                    label = "Récoltes",
+                                    gradient = Brush.verticalGradient(
+                                        listOf(LightGreen, DarkGreen)
+                                    ),
+                                    modifier = Modifier.weight(1f)
 
-                            StatCard(
-                                value = "${totalHarvests}",
-                                label = "Kg total",
-                                gradient = Brush.verticalGradient(
-                                    listOf(LightOrange, DarkOrange)
                                 )
-                            )
+
+                                StatCard(
+                                    value = "${totalHarvests}",
+                                    label = "Kg total",
+                                    gradient = Brush.verticalGradient(
+                                        listOf(LightOrange, DarkOrange)
+                                    ) ,
+                                    modifier = Modifier.weight(1f)
+                                )
+
                         }
                     }
                     item {

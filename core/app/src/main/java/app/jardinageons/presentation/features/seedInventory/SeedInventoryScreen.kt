@@ -19,7 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -57,8 +56,6 @@ import app.jardinageons.presentation.theme.LightBlue
 import app.jardinageons.presentation.theme.LightGreen
 import app.jardinageons.presentation.theme.LightOrange
 import app.jardinageons.presentation.theme.Purple
-import app.jardinageons.presentation.features.weather.WeatherViewModel
-import app.jardinageons.presentation.features.weather.components.WeatherWidget
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -91,8 +88,6 @@ fun SeedInventoryScreen(
                 Event.addError -> snackbarHostState.showSnackbar("Erreur : graine non ajoutée")
                 Event.deleteError -> snackbarHostState.showSnackbar("Erreur : graine non supprimée")
             }
-
-
         }
     }
 

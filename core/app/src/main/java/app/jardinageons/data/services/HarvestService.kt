@@ -15,21 +15,21 @@ import retrofit2.http.Query
 
 public interface HarvestService {
     @InjectAuth
-    @GET("v1/Harvest")
+    @GET("api/v1/Harvest")
     suspend fun listHarvests(
         @Query("pageIndex") pageIndex: Int,
         @Query("countPerPage") countPerPage: Int
     ): PagedResponse<Harvest>
 
     @InjectAuth
-    @POST("v1/Harvest")
+    @POST("api/v1/Harvest")
     suspend fun createHarvest(@Body harvest: HarvestRequest): Harvest
 
     @InjectAuth
-    @DELETE("v1/Harvest/{id}")
+    @DELETE("api/v1/Harvest/{id}")
     suspend fun deleteHarvest(@Path("id") id: Long): Response<Unit>
 
     @InjectAuth
-    @PUT("v1/Harvest/{id}")
+    @PUT("api/v1/Harvest/{id}")
     suspend fun updateHarvest(@Path("id") id: Long, @Body harvest: Harvest): Harvest
 }
