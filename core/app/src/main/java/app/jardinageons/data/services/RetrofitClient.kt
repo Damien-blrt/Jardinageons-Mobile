@@ -1,5 +1,6 @@
 package app.jardinageons.data.services
 
+import android.R.attr.level
 import app.jardinageons.data.interceptors.AuthInterceptor
 import app.jardinageons.data.interceptors.TokenAuthenticator
 import app.jardinageons.data.storage.TokenManager
@@ -41,6 +42,36 @@ object RetrofitClient {
         retrofit.create(ISeedService::class.java)
         // Crée automatiquement une implémentation de l'interface ISeedService
         // on pourra appeler seedService.listSeeds(...)
+    }
+
+    val vegetableService: IVegetableService by lazy {
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor(tokenProvider))
+            .authenticator(TokenAuthenticator())
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        retrofit.create(IVegetableService::class.java)
+    }
+
+    val adviceService: IAdviceService by lazy {
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor(tokenProvider))
+            .authenticator(TokenAuthenticator())
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        retrofit.create(IAdviceService::class.java)
     }
 
 
@@ -102,5 +133,7 @@ object RetrofitClient {
 
         retrofit.create(IWeatherService::class.java)
     }
+
+
 
 }
