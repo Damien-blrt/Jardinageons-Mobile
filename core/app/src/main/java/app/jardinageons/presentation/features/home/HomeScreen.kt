@@ -1,5 +1,6 @@
 package app.jardinageons.presentation.features.home
 
+import AnimatedPlantLoader
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -100,7 +101,7 @@ fun HomeScreen(
             if (isLoading) {
                 item {
                     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+                        AnimatedPlantLoader(modifier = Modifier.padding(16.dp))
                     }
                 }
             } else if (filteredAdvices.isEmpty()) {
