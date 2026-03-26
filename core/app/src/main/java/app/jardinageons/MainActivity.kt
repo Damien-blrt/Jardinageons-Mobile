@@ -50,14 +50,8 @@ class MainActivity : ComponentActivity() {
             syncWorkRequest
         )
 
-        val wateringWorkRequest = PeriodicWorkRequestBuilder<WateringWorker>(3, TimeUnit.DAYS).build()
-        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
-            "wateringReminders",
-            ExistingPeriodicWorkPolicy.KEEP,
-            wateringWorkRequest
-        )
+        WateringWorker.enqueue(applicationContext)
 
-        // Restaurer le token depuis le DataStore au démarrage
         lifecycleScope.launch {
             this@MainActivity.tokenDataStore.data.collect { tokens ->
                 TokenManager.accessToken = tokens?.accessToken
