@@ -15,8 +15,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import app.jardinageons.presentation.features.harvest.HarvestScreen
 import app.jardinageons.presentation.features.home.HomeScreen
 import app.jardinageons.presentation.features.seedInventory.SeedInventoryScreen
+import app.jardinageons.presentation.features.vegetable.VegetableScreen
 
 @Composable
 fun AppNavGraph(modifier: Modifier = Modifier) {
@@ -49,8 +51,10 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                 }
                 BottomBarRoutes.INVENTORY -> SeedInventoryScreen()
                 BottomBarRoutes.HISTORY -> {
-                    // TODO(HistoryScreen): remplacer cet écran temporaire par HistoryScreen()
-                    PlaceholderScreen(title = "Historique")
+                    HarvestScreen()
+                }
+                BottomBarRoutes.VEGETABLE -> {
+                    VegetableScreen()
                 }
             }
         }

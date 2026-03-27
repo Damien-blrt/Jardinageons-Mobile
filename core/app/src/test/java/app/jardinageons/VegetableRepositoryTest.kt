@@ -89,8 +89,11 @@ class VegetableRepositoryTest {
     fun `getVegetables throws when service fails`() = runTest {
         coEvery { service.listVegetables(any(), any()) } throws RuntimeException("Network error")
 
-        assertThrows(RuntimeException::class.java) {
-            runTest { repository.getVegetables(0, 10) }
+        try {
+            repository.getVegetables(0, 10)
+            fail("Expected RuntimeException")
+        } catch (e: RuntimeException) {
+            assertEquals("Network error", e.message)
         }
     }
 

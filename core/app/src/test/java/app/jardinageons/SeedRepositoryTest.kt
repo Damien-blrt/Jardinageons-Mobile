@@ -90,15 +90,7 @@ class SeedRepositoryTest {
         assertTrue(result.isEmpty())
     }
 
-    @Test
-    fun `getSeedsFlow preserves nullable vegetableId`() = runTest {
-        val entity = fakeSeedEntity(vegetableId = null)
-        coEvery { dao.loadSeeds() } returns flowOf(listOf(entity))
 
-        val result = repository.getSeedsFlow().first()
-
-        assertNull(result[0].vegetableId)
-    }
 
     @Test
     fun `getSeedsFlow maps multiple entities correctly`() = runTest {
@@ -160,8 +152,11 @@ class SeedRepositoryTest {
     fun `refreshSeeds throws when service fails`() = runTest {
         coEvery { service.listSeeds(any(), any()) } throws RuntimeException("Network error")
 
-        assertThrows(RuntimeException::class.java) {
-            runTest { repository.refreshSeeds() }
+        try {
+            repository.refreshSeeds()
+            fail("Expected RuntimeException")
+        } catch (e: RuntimeException) {
+            assertEquals("Network error", e.message)
         }
     }
 

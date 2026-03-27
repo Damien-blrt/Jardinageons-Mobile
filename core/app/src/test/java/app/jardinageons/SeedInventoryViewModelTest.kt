@@ -7,17 +7,23 @@ import app.jardinageons.presentation.features.seedInventory.SeedRequest
 import io.mockk.coEvery
 import io.mockk.coJustRun
 import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
 // Ces tests ne font qu'inspecter l'état synchrone initial du ViewModel.
-// Pas de setMain, pas de coroutines, pas de dépendance au main looper Android.
+// Tests JVM avec remplacement du Dispatchers.Main
 class SeedInventoryViewModelTest {
 
     private lateinit var repository: SeedRepository
     private lateinit var viewModel: SeedInventoryViewModel
+    private var testDispatcher = StandardTestDispatcher()
 
     // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -44,10 +50,18 @@ class SeedInventoryViewModelTest {
 
     @Before
     fun setup() {
+        testDispatcher = StandardTestDispatcher()
+        Dispatchers.setMain(testDispatcher)
         repository = mockk()
         coEvery { repository.getSeedsFlow() } returns flowOf(emptyList())
         coJustRun { repository.refreshSeeds() }
         viewModel = SeedInventoryViewModel(repository)
+    }
+
+    @After
+    fun tearDown() {
+        testDispatcher.scheduler.advanceUntilIdle() // attend la fin des coroutines
+        Dispatchers.resetMain()
     }
 
     // ── État initial (synchrone, toujours testable) ────────────────────────────
