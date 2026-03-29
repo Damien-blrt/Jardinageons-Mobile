@@ -142,4 +142,67 @@ class VegetableRepositoryTest {
         // le repo appelle service.updateVegetable(vegetable.id, ...) donc 7L
         coVerify { service.updateVegetable(7L, vegetable) }
     }
+
+    // ── getVegetableById ──────────────────────────────────────────────────────
+
+    @Test
+    fun `getVegetableById returns correct vegetable`() = runTest {
+        val expected = fakeVegetable(id = 42L, name = "Aubergine")
+        coEvery { service.getVegetableById(42L) } returns expected
+
+        val result = repository.getVegetableById(42L)
+
+        assertEquals(expected, result)
+        coVerify { service.getVegetableById(42L) }
+    }
+
+    @Test
+    fun `getVegetableById throws when service fails`() = runTest {
+        coEvery { service.getVegetableById(any()) } throws RuntimeException("Not found")
+
+        try {
+            repository.getVegetableById(99L)
+            fail("Expected RuntimeException")
+        } catch (e: RuntimeException) {
+            assertEquals("Not found", e.message)
+        }
+    }
+
+    // ── Error path tests ──────────────────────────────────────────────────────
+
+    @Test
+    fun `createVegetable throws when service fails`() = runTest {
+        coEvery { service.createVegetable(any()) } throws RuntimeException("Create failed")
+
+        try {
+            repository.createVegetable(fakeRequest())
+            fail("Expected RuntimeException")
+        } catch (e: RuntimeException) {
+            assertEquals("Create failed", e.message)
+        }
+    }
+
+    @Test
+    fun `deleteVegetable throws when service fails`() = runTest {
+        coEvery { service.deleteVegetable(any()) } throws RuntimeException("Delete failed")
+
+        try {
+            repository.deleteVegetable(1L)
+            fail("Expected RuntimeException")
+        } catch (e: RuntimeException) {
+            assertEquals("Delete failed", e.message)
+        }
+    }
+
+    @Test
+    fun `updateVegetable throws when service fails`() = runTest {
+        coEvery { service.updateVegetable(any(), any()) } throws RuntimeException("Update failed")
+
+        try {
+            repository.updateVegetable(1L, fakeVegetable())
+            fail("Expected RuntimeException")
+        } catch (e: RuntimeException) {
+            assertEquals("Update failed", e.message)
+        }
+    }
 }
