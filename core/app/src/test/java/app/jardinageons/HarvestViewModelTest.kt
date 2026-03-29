@@ -13,7 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -28,7 +28,7 @@ class HarvestViewModelTest {
 
     private lateinit var repository: HarvestRepository
     private lateinit var viewModel: HarvestViewModel
-    private var testDispatcher = StandardTestDispatcher()
+    private var testDispatcher = UnconfinedTestDispatcher()
 
     // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -44,7 +44,7 @@ class HarvestViewModelTest {
 
     @Before
     fun setup() {
-        testDispatcher = StandardTestDispatcher()
+        testDispatcher = UnconfinedTestDispatcher()
         Dispatchers.setMain(testDispatcher)
         repository = mockk()
         coEvery { repository.getHarvestsFlow() } returns flowOf(emptyList())
@@ -54,7 +54,6 @@ class HarvestViewModelTest {
 
     @After
     fun teardown() {
-        testDispatcher.scheduler.advanceUntilIdle()
         Dispatchers.resetMain()
     }
 

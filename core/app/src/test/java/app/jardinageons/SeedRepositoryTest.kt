@@ -14,6 +14,11 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.test.resetMain
+import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -62,9 +67,15 @@ class SeedRepositoryTest {
 
     @Before
     fun setup() {
+        Dispatchers.setMain(UnconfinedTestDispatcher())
         service = mockk()
         dao = mockk()
         repository = SeedRepository(service, dao)
+    }
+
+    @After
+    fun teardown() {
+        Dispatchers.resetMain()
     }
 
     // ── getSeedsFlow ───────────────────────────────────────────────────────────
