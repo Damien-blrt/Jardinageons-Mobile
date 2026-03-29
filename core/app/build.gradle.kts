@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.kotlin.serialization)
+    id("jacoco")
 }
 
 android {
@@ -100,4 +101,44 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     implementation("androidx.datastore:datastore:1.2.1")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
+}
+
+// JaCoCo test coverage setup
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+tasks.register<JacocoReport>("jacocoTestReport") {
+    dependsOn("testDebugUnitTest")
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+
+    val fileFilter = listOf(
+        "**/R.class",
+        "**/R$*.class",
+        "**/BuildConfig.*",
+        "**/Manifest*.*",
+        "**/*Test*.*",
+        // Exclusions strictes pour la UI Compose et Activity
+        "**/presentation/**",
+        "**/*Activity.*",
+        "**/*Application.*",
+        "**/components/**",
+        "**/*Screen.*"
+    )
+
+    val debugTree = fileTree("dir" to "${layout.buildDirectory.get()}/tmp/kotlin-classes/debug", "excludes" to fileFilter)
+    val mainSrc = "${project.projectDir}/src/main/java"
+
+    sourceDirectories.setFrom(files(mainSrc))
+    classDirectories.setFrom(files(debugTree))
+    
+    // Le fichier .exec où testDebugUnitTest stocke la couverture
+    executionData.setFrom(fileTree("dir" to "${layout.buildDirectory.get()}", "includes" to listOf(
+        "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec", 
+        "jacoco/testDebugUnitTest.exec"
+    )))
 }
