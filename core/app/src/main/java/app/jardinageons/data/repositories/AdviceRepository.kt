@@ -4,8 +4,9 @@ import android.util.Log
 import app.jardinageons.data.models.Advice
 import app.jardinageons.data.services.RetrofitClient
 
-class AdviceRepository {
-    private val api = RetrofitClient.adviceService
+import app.jardinageons.data.services.IAdviceService
+
+class AdviceRepository(private val api: IAdviceService = RetrofitClient.adviceService) {
 
     suspend fun getAdvices(): List<Advice>? {
         return try {

@@ -107,6 +107,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     implementation("androidx.datastore:datastore:1.2.1")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 }
 
 // JaCoCo test coverage setup

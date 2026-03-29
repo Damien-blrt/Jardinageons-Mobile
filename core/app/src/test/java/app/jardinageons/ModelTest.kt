@@ -197,4 +197,54 @@ class ModelTest {
         val cityName: String? = null
         assertEquals("Mon Jardin", cityName ?: "Mon Jardin")
     }
+
+    // ── Garden ─────────────────────────────────────────────────────────────────
+
+    @Test
+    fun `garden is created correctly`() {
+        val garden = Garden()
+        assertNotNull(garden)
+    }
+
+    // ── Grow ───────────────────────────────────────────────────────────────────
+
+    @Test
+    fun `grow is created with correct values`() {
+        val grow = Grow(1L, 42L, "2026-05-10", 3)
+        assertEquals(1L, grow.id)
+        assertEquals(42L, grow.vegetableId)
+        assertEquals("2026-05-10", grow.plantingDate)
+        assertEquals(3, grow.quantity)
+    }
+
+    @Test
+    fun `grow defaults are applied correctly`() {
+        val grow = Grow(1L, 42L)
+        assertNull(grow.plantingDate)
+        assertEquals(1, grow.quantity)
+    }
+
+    // ── Auth Models ────────────────────────────────────────────────────────────
+
+    @Test
+    fun `loginRequest is created correctly`() {
+        val request = LoginRequest("test@test.com", "password123")
+        assertEquals("test@test.com", request.email)
+        assertEquals("password123", request.password)
+    }
+
+    @Test
+    fun `loginResponse is mapped correctly`() {
+        val response = LoginResponse("Bearer", "abc.def.ghi", 3600L, "refresh_token_123")
+        assertEquals("Bearer", response.tokenType)
+        assertEquals("abc.def.ghi", response.accessToken)
+        assertEquals(3600L, response.expiresIn)
+        assertEquals("refresh_token_123", response.refreshToken)
+    }
+
+    @Test
+    fun `refreshRequest is created correctly`() {
+        val request = RefreshRequest("my_refresh_token")
+        assertEquals("my_refresh_token", request.refreshToken)
+    }
 }

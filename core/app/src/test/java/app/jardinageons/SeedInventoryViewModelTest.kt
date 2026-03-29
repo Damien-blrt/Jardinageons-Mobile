@@ -10,6 +10,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -23,7 +24,7 @@ class SeedInventoryViewModelTest {
 
     private lateinit var repository: SeedRepository
     private lateinit var viewModel: SeedInventoryViewModel
-    private var testDispatcher = StandardTestDispatcher()
+    private lateinit var testDispatcher: TestDispatcher
 
     // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -60,7 +61,8 @@ class SeedInventoryViewModelTest {
 
     @After
     fun tearDown() {
-        testDispatcher.scheduler.advanceUntilIdle() // attend la fin des coroutines
+        testDispatcher.scheduler.advanceUntilIdle() 
+        Thread.sleep(50) // wait for Dispatchers.IO
         Dispatchers.resetMain()
     }
 
