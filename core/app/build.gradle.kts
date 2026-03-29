@@ -56,6 +56,12 @@ android {
         compose = true
         buildConfig = true
     }
+
+    testOptions {
+        unitTests {
+            isReturnDefaultValues = true  // ← mocke automatiquement android.util.Log
+        }
+    }
 }
 
 dependencies {
@@ -71,6 +77,8 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp("androidx.room:room-compiler:2.6.1")
     implementation(libs.androidx.appcompat)
+    testImplementation("io.mockk:mockk:1.13.10")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -89,6 +97,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation("com.google.android.gms:play-services-location:21.2.0")
     implementation(libs.androidx.navigation.compose)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     implementation("androidx.datastore:datastore:1.2.1")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 }
