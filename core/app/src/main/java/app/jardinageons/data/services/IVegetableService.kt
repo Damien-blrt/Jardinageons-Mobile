@@ -32,4 +32,8 @@ interface IVegetableService {
     @InjectAuth
     @PUT("api/v1/Vegetable/{id}")
     suspend fun updateVegetable(@Path("id") id: Long, @Body vegetable: Vegetable): Vegetable
+
+    @InjectAuth
+    @GET("api/v1/Vegetable/{id}")
+    suspend fun getVegetableById(@Path("id") id: Long): Vegetable
 }

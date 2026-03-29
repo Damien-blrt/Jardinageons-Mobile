@@ -28,7 +28,13 @@ class VegetableRepository(private val _service: IVegetableService) {
 
     suspend fun updateVegetable(id: Long, vegetable: Vegetable) {
         return withContext(Dispatchers.IO) {
-            _service.updateVegetable(vegetable.id, vegetable)
+            _service.updateVegetable(id, vegetable)
+        }
+    }
+
+    suspend fun getVegetableById(id: Long): Vegetable {
+        return withContext(Dispatchers.IO) {
+            _service.getVegetableById(id)
         }
     }
 }
