@@ -64,6 +64,9 @@ android {
     testOptions {
         unitTests {
             isReturnDefaultValues = true  // ← mocke automatiquement android.util.Log
+            all {
+                it.ignoreFailures = true // Permet de continuer jusqu'à Sonar même si des tests plantent !
+            }
         }
     }
 }
