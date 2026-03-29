@@ -1,6 +1,5 @@
 package app.jardinageons.presentation.features.harvest
 
-import AnimatedPlantLoader
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -37,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.jardinageons.data.models.Harvest
+import app.jardinageons.presentation.components.AnimatedPlantLoader
 import app.jardinageons.presentation.features.harvest.HarvestEvent.*
 import app.jardinageons.presentation.features.harvest.components.EditHarvestModal
 import app.jardinageons.presentation.features.harvest.components.HarvestCard

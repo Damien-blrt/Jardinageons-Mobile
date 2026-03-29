@@ -83,7 +83,7 @@ object RetrofitClient {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        retrofit.create(IAdviceService::class.java)
+        retrofit.create(HarvestService::class.java)
     }
 
     val growService: IGrowService by lazy {
