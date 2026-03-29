@@ -9,6 +9,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import androidx.work.ExistingWorkPolicy
 import app.jardinageons.R
 import app.jardinageons.data.repositories.GrowsRepository
 import app.jardinageons.data.repositories.VegetableRepository
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
+// Doc vu en cours via les slides sur les workers périodique en amphi
 class WateringWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
 
     companion object {
@@ -30,11 +32,19 @@ class WateringWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(c
         private const val REPEAT_INTERVAL_DAYS = 3L
 
         fun enqueue(context: Context) {
+            val workManager = WorkManager.getInstance(context)
+            workManager.cancelAllWorkByTag(WateringWorker::class.java.name)
+            
             val request = OneTimeWorkRequestBuilder<WateringWorker>()
-                .setInitialDelay(REPEAT_INTERVAL_DAYS, TimeUnit.SECONDS)
+                .setInitialDelay(REPEAT_INTERVAL_DAYS, TimeUnit.DAYS)
                 .build()
-            WorkManager.getInstance(context).enqueue(request)
-            Log.d(TAG, "Worker planifié dans $REPEAT_INTERVAL_DAYS jours")
+            
+            workManager.enqueueUniqueWork(
+                WORK_NAME,
+                ExistingWorkPolicy.REPLACE,
+                request
+            )
+            Log.d(TAG, "Worker unique planifié dans $REPEAT_INTERVAL_DAYS jours")
         }
     }
 
@@ -82,17 +92,20 @@ class WateringWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(c
             Result.success()
         } catch (e: Exception) {
             Log.e(TAG, "Erreur WateringWorker: ${e.message}", e)
-            scheduleNext() // Re-planifier même en cas d'erreur
             Result.retry()
         }
     }
 
-    /** Re-planifie le worker dans 3 jours */
+    /** tous les  3 jours */
     private fun scheduleNext() {
         val request = OneTimeWorkRequestBuilder<WateringWorker>()
             .setInitialDelay(REPEAT_INTERVAL_DAYS, TimeUnit.DAYS)
             .build()
-        WorkManager.getInstance(applicationContext).enqueue(request)
-        Log.d(TAG, "Prochain worker planifié dans $REPEAT_INTERVAL_DAYS secondes")
+        WorkManager.getInstance(applicationContext).enqueueUniqueWork(
+            WORK_NAME,
+            ExistingWorkPolicy.REPLACE,
+            request
+        )
+        Log.d(TAG, "Prochain worker unique planifié dans $REPEAT_INTERVAL_DAYS jours")
     }
 }
