@@ -12,6 +12,7 @@ sonar {
         property("sonar.projectKey", "Kotlin")
         property("sonar.qualitygate.wait", "true")
         property("sonar.coverage.jacoco.xmlReportPaths", "${project.projectDir}/app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+        property("sonar.junit.reportPaths", "${project.projectDir}/app/build/test-results/testDebugUnitTest")
         property("sonar.exclusions", "**/presentation/**/*.kt,**/*Activity.kt,**/*Application.kt,**/components/**/*.kt")
         property("sonar.coverage.exclusions", "**/presentation/**/*.kt,**/*Activity.kt,**/*Application.kt,**/components/**/*.kt,**/*Screen.kt")
     }

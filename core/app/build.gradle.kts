@@ -45,6 +45,9 @@ android {
                 "proguard-rules.pro"
             )
         }
+        getByName("debug") {
+            enableUnitTestCoverage = true
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
