@@ -55,12 +55,7 @@ class MainActivity : ComponentActivity() {
             JardinageonsTheme {
                 AuthorizeView(
                     authorized = {
-                        val navController = rememberNavController()
-                        NavHost(navController = navController, startDestination = "home") {
-                            composable("home") {
-                                AppNavGraph()
-                            }
-                        }
+                        AppNavGraph()
                     },
                     unauthorized = {
                         val navController = rememberNavController()

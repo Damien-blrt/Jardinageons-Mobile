@@ -11,6 +11,10 @@ import okhttp3.Route
 class TokenAuthenticator : Authenticator {
 
     override fun authenticate(route: Route?, response: Response): Request? {
+        if (response.request.url.encodedPath.endsWith("/authentication/refresh")) {
+            return null
+        }
+
         if (responseCount(response) >= 2) {
             return null
         }
