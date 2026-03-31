@@ -50,6 +50,14 @@ fun GardenScreen(
         return
     }
 
+    if (uiState.errorMessage != null && uiState.gardens.isEmpty()) {
+        GardenErrorState(
+            message = uiState.errorMessage,
+            onRetry = viewModel::loadGardens
+        )
+        return
+    }
+
     if (uiState.gardens.isEmpty()) {
         GardenUnavailableState(onRetry = viewModel::loadGardens)
         return
@@ -120,6 +128,30 @@ private fun GardenUnavailableState(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text("Aucun jardin disponible.")
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(onClick = onRetry) {
+                Text("Réessayer")
+            }
+        }
+    }
+}
+
+@Composable
+private fun GardenErrorState(
+    message: String,
+    onRetry: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = message,
+                color = MaterialTheme.colorScheme.error
+            )
             Spacer(modifier = Modifier.height(12.dp))
             Button(onClick = onRetry) {
                 Text("Réessayer")

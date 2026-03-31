@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 data class GardenUiState(
     val isLoading: Boolean = true,
@@ -48,10 +49,18 @@ class GardenViewModel(
                     errorMessage = null
                 )
             }.onFailure { throwable ->
+                val message = when (throwable) {
+                    is HttpException -> when (throwable.code()) {
+                        401, 403 -> "Session expirée ou accès refusé. Reconnectez-vous."
+                        else -> throwable.message()
+                    }
+                    else -> throwable.message
+                } ?: "Impossible de charger le jardin"
+
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = throwable.message ?: "Impossible de charger le jardin"
+                        errorMessage = message
                     )
                 }
             }

@@ -170,6 +170,7 @@ fun HomeScreen(
                 HomeGardenCard(
                     canvasModel = gardenUiState.selectedCanvas,
                     isLoading = gardenUiState.isLoading,
+                    errorMessage = gardenUiState.errorMessage,
                     onClick = onGardenClick
                 )
             }
@@ -315,6 +316,7 @@ fun NotificationPromoCard(hasPermission: Boolean, onClick: () -> Unit) {
 private fun HomeGardenCard(
     canvasModel: GardenCanvasModel?,
     isLoading: Boolean,
+    errorMessage: String?,
     onClick: () -> Unit
 ) {
     val cardModifier = Modifier
@@ -341,14 +343,27 @@ private fun HomeGardenCard(
         if (isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         } else {
-            Image(
-                painter = painterResource(id = R.drawable.potted_plant),
-                contentDescription = "Mon Jardin",
+            Column(
                 modifier = Modifier
-                    .size(64.dp)
-                    .align(Alignment.Center),
-                alpha = 0.5f
-            )
+                    .align(Alignment.Center)
+                    .padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.potted_plant),
+                    contentDescription = "Mon Jardin",
+                    modifier = Modifier.size(64.dp),
+                    alpha = 0.5f
+                )
+                errorMessage?.let {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = it,
+                        textAlign = TextAlign.Center,
+                        color = Color.DarkGray
+                    )
+                }
+            }
         }
     }
 }
