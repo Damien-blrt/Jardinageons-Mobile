@@ -50,9 +50,10 @@ fun GardenScreen(
         return
     }
 
-    if (uiState.errorMessage != null && uiState.gardens.isEmpty()) {
+    val errorMessage = uiState.errorMessage
+    if (errorMessage != null && uiState.gardens.isEmpty()) {
         GardenErrorState(
-            message = uiState.errorMessage,
+            message = errorMessage,
             onRetry = viewModel::loadGardens
         )
         return
