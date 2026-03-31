@@ -1,3 +1,5 @@
+package app.jardinageons.presentation.components
+
 import android.graphics.PathMeasure
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas

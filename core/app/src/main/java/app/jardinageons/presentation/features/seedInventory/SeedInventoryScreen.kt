@@ -1,6 +1,6 @@
 package app.jardinageons.presentation.features.seedInventory
 
-import AnimatedPlantLoader
+import app.jardinageons.presentation.components.AnimatedPlantLoader
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

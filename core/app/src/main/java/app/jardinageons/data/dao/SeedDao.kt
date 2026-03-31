@@ -9,8 +9,6 @@ import androidx.room.Update
 import app.jardinageons.data.entities.SeedEntity
 import kotlinx.coroutines.flow.Flow
 
-
-
 @Dao
 interface SeedDao{
     @Query("SELECT * FROM Seed")
