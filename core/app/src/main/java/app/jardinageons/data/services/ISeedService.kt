@@ -15,21 +15,21 @@ import retrofit2.http.Query
 
 interface ISeedService {
     @InjectAuth
-    @GET("v1/Seed")
+    @GET("api/v1/Seed")
     suspend fun listSeeds(
         @Query("pageIndex") pageIndex: Int,
         @Query("countPerPage") countPerPage: Int
     ): PagedResponse<Seed>
 
     @InjectAuth
-    @POST("v1/Seed")
+    @POST("api/v1/Seed")
     suspend fun createSeed(@Body seed: SeedRequest): Seed
 
     @InjectAuth
-    @DELETE("v1/Seed/{id}")
+    @DELETE("api/v1/Seed/{id}")
     suspend fun deleteSeed(@Path("id") id: Long): Response<Unit>
 
     @InjectAuth
-    @PUT("v1/Seed/{id}")
+    @PUT("api/v1/Seed/{id}")
     suspend fun updateSeed(@Path("id") id: Long, @Body seed: Seed): Seed
 }

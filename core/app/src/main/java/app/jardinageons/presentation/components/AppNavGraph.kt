@@ -22,7 +22,7 @@ import app.jardinageons.presentation.features.statPage.StatScreen
 @Composable
 fun AppNavGraph(modifier: Modifier = Modifier) {
     var selectedRoute by rememberSaveable {
-        mutableStateOf(BottomBarRoutes.INVENTORY)
+        mutableStateOf(BottomBarRoutes.HOME)
     }
 
     Scaffold(
