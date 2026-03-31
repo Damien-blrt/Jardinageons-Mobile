@@ -1,5 +1,4 @@
 package app.jardinageons.presentation.features.garden.components
-
 import android.net.Uri
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -39,6 +38,7 @@ import coil.compose.AsyncImage
 import java.text.Normalizer
 import kotlin.math.min
 
+
 private const val WEB_BASE_URL =
     "https://codefirst.iut.uca.fr/kubernetes/iut-inf63-projets-etudiants-jardinageons/jardinageons"
 private const val ROTATE_CANVAS_FOR_PORTRAIT = true
@@ -47,6 +47,10 @@ private val GardenBackgroundColor = Color(0xFFEFF4E6)
 private val GardenFillColor = Color(0xFFB5C99A)
 private val GardenBorderColor = Color(0xFF8CA06E)
 private val GardenPathColor = Color(0xFF6C8D43)
+
+
+// La partie affichage du jardin a été entierement généré a l'IA
+
 
 @Composable
 fun GardenPlanView(
