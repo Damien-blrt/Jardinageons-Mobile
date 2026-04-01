@@ -55,7 +55,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.jardinageons.R
-import app.jardinageons.data.models.GardenCanvasModel
+import app.jardinageons.presentation.features.garden.model.GardenCanvasModel
 import app.jardinageons.presentation.components.AnimatedPlantLoader
 import app.jardinageons.presentation.components.TipCard
 import app.jardinageons.presentation.features.garden.GardenViewModel
