@@ -19,6 +19,7 @@ object BottomBarRoutes {
     const val GARDEN = "garden"
     const val INVENTORY = "inventory"
     const val HISTORY = "history"
+    const val STATS = "statistics"
     const val VEGETABLE = "vegetable"
 }
 
@@ -44,7 +45,12 @@ val bottomBarDestinations = listOf(
         iconResId = R.drawable.clock_arrow_down
     ),
     BottomBarDestination(
-        BottomBarRoutes.VEGETABLE,
+        route = BottomBarRoutes.STATS,
+        label = "Stats",
+        iconResId = R.drawable.stats
+    ),
+    BottomBarDestination(
+        route = BottomBarRoutes.VEGETABLE,
         label = "Fiches Légumes",
         iconResId = R.drawable.watter
     )
