@@ -4,9 +4,15 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.jardinageons.data.database.JardinageonsDatabase
+import app.jardinageons.data.models.Harvest
 import app.jardinageons.data.models.Seed
+import app.jardinageons.data.models.Vegetable
+import app.jardinageons.data.repositories.HarvestRepository
 import app.jardinageons.data.repositories.SeedRepository
+import app.jardinageons.data.repositories.VegetableRepository
+import app.jardinageons.data.services.RetrofitClient.harvestService
 import app.jardinageons.data.services.RetrofitClient.seedService
+import app.jardinageons.data.services.RetrofitClient.vegetableService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +24,11 @@ class StatViewModel(
         seedService,
         JardinageonsDatabase.getInstance().seedDao()
     ),
+    private val harvestRepository: HarvestRepository = HarvestRepository(
+        harvestService,
+        JardinageonsDatabase.getInstance().harvestDao()
+    ),
+    private val vegetableRepository: VegetableRepository = VegetableRepository(vegetableService),
 ) : ViewModel() {
 
     private val _seeds = MutableStateFlow<List<Seed>>(emptyList())
@@ -26,16 +37,19 @@ class StatViewModel(
     private val _totalSeeds = MutableStateFlow(0)
     val totalSeeds: StateFlow<Int> = _totalSeeds.asStateFlow()
 
+    private val _harvests = MutableStateFlow<List<Harvest>>(emptyList())
+    val harvests: StateFlow<List<Harvest>> = _harvests.asStateFlow()
+
+    private val _vegetables = MutableStateFlow<List<Vegetable>>(emptyList())
+    val vegetables: StateFlow<List<Vegetable>> = _vegetables.asStateFlow()
+
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     init {
-        viewModelScope.launch(Dispatchers.Default) {
-            observeLocalSeeds()
-        }
-        viewModelScope.launch(Dispatchers.IO) {
-            refreshFromNetwork()
-        }
+        viewModelScope.launch(Dispatchers.Default) { observeLocalSeeds() }
+        viewModelScope.launch(Dispatchers.Default) { observeLocalHarvests() }
+        viewModelScope.launch(Dispatchers.IO) { refreshFromNetwork() }
     }
 
     private fun observeLocalSeeds() {
@@ -43,10 +57,17 @@ class StatViewModel(
             seedRepository.getSeedsFlow().collect { seeds ->
                 _seeds.value = seeds
                 _totalSeeds.value = seeds.sumOf { it.quantity }
-                if (_isLoading.value) {
-                    _isLoading.value = false
-                }
+                if (_isLoading.value) _isLoading.value = false
                 Log.d("StatViewModel", "Seeds locales: ${seeds.size}")
+            }
+        }
+    }
+
+    private fun observeLocalHarvests() {
+        viewModelScope.launch {
+            harvestRepository.getHarvestsFlow().collect { harvests ->
+                _harvests.value = harvests
+                Log.d("StatViewModel", "Récoltes locales: ${harvests.size}")
             }
         }
     }
@@ -55,6 +76,9 @@ class StatViewModel(
         viewModelScope.launch {
             try {
                 seedRepository.refreshSeeds()
+                harvestRepository.refreshHarvests()
+                val vegs = vegetableRepository.getVegetables(0, 100)
+                _vegetables.value = vegs.items
             } catch (e: Exception) {
                 Log.e("StatViewModel", "Erreur réseau: ${e.message}", e)
             } finally {

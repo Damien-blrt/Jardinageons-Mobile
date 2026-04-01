@@ -37,7 +37,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,13 +52,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.jardinageons.R
+import app.jardinageons.data.models.GardenCanvasModel
 import app.jardinageons.presentation.components.AnimatedPlantLoader
 import app.jardinageons.presentation.components.TipCard
 import app.jardinageons.presentation.features.garden.GardenViewModel
 import app.jardinageons.presentation.features.garden.components.GardenPlanView
-import app.jardinageons.presentation.features.garden.model.GardenCanvasModel
 import app.jardinageons.presentation.features.weather.WeatherViewModel
 import app.jardinageons.presentation.features.weather.components.WeatherWidget
 import java.util.Calendar
@@ -71,9 +71,9 @@ fun HomeScreen(
     homeViewModel: HomeViewModel = viewModel(),
     onGardenClick: () -> Unit = {}
 ) {
-    val gardenUiState by gardenViewModel.uiState.collectAsState()
-    val advices by homeViewModel.advices.collectAsState()
-    val isLoading by homeViewModel.isLoading.collectAsState()
+    val gardenUiState by gardenViewModel.uiState.collectAsStateWithLifecycle()
+    val advices by homeViewModel.advices.collectAsStateWithLifecycle()
+    val isLoading by homeViewModel.isLoading.collectAsStateWithLifecycle()
 
     val currentMonthStr = remember {
         val months = listOf(

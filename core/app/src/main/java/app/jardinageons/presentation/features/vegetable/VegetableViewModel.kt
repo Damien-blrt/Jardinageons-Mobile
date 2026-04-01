@@ -35,7 +35,7 @@ class VegetableViewModel(
     val uiEvent = _uiEvent.asSharedFlow()
 
     private val _isLoading = MutableStateFlow(true)
-    val isLoading: StateFlow<Boolean> = _isLoading
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     init {
         loadVegetables()

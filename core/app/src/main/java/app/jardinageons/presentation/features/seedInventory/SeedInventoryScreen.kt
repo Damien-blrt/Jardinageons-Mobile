@@ -30,7 +30,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,10 +64,10 @@ import java.util.Locale
 fun SeedInventoryScreen(
     viewModel: SeedInventoryViewModel = viewModel()
 ) {
-    val seedList by viewModel.seeds.collectAsState()
-    val totalSeeds by viewModel.totalSeeds.collectAsState()
-    val averageGerminationTime by viewModel.averageGerminationTime.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
+    val seedList by viewModel.seeds.collectAsStateWithLifecycle()
+    val totalSeeds by viewModel.totalSeeds.collectAsStateWithLifecycle()
+    val averageGerminationTime by viewModel.averageGerminationTime.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
     var selectedSeedForEdit by remember { mutableStateOf<Seed?>(null) }
     var createButtonClicked by remember { mutableStateOf<Boolean>(false) }

@@ -29,7 +29,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,9 +55,9 @@ import app.jardinageons.presentation.theme.LightGreen
 fun VegetableScreen(
     viewModel: VegetableViewModel = viewModel()
 ) {
-    val vegetableList by viewModel.vegetables.collectAsState()
-    val totalVegetables by viewModel.totalVegetables.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
+    val vegetableList by viewModel.vegetables.collectAsStateWithLifecycle()
+    val totalVegetables by viewModel.totalVegetables.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
     var selectedVegetableForEdit by remember { mutableStateOf<Vegetable?>(null) }
     var createButtonClicked by remember { mutableStateOf(false) }
@@ -78,8 +78,8 @@ fun VegetableScreen(
         }
     }
 
-    val filteredVegetables = vegetableList.filter {
-        it.name.contains(searchedVegetableName, ignoreCase = true)
+    val filteredVegetables = remember(vegetableList, searchedVegetableName) {
+        vegetableList.filter { it.name.contains(searchedVegetableName, ignoreCase = true) }
     }
 
     Scaffold(

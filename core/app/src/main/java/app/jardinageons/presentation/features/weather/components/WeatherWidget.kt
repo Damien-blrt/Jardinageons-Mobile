@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +37,7 @@ fun WeatherWidget(
     viewModel: WeatherViewModel,
     modifier: Modifier = Modifier
 ) {
-    val summary by viewModel.weatherSummary.collectAsState()
+    val summary by viewModel.weatherSummary.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     // Outil de Google pour lire le GPS

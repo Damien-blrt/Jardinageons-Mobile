@@ -23,7 +23,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,9 +51,9 @@ import java.util.Locale
 
 @Composable
 fun HarvestScreen(viewModel: HarvestViewModel = viewModel()) {
-    val harvestList by viewModel.harvests.collectAsState()
-    val totalHarvests by viewModel.totalHarvests.collectAsState()
-    val isLoading by viewModel.isFirstLoading.collectAsState()
+    val harvestList by viewModel.harvests.collectAsStateWithLifecycle()
+    val totalHarvests by viewModel.totalHarvests.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isFirstLoading.collectAsStateWithLifecycle()
     var selectedHarvestForEdit by remember { mutableStateOf<Harvest?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -70,10 +70,9 @@ fun HarvestScreen(viewModel: HarvestViewModel = viewModel()) {
         }
     }
 
-    val filteredHarvests = if (searchQuery.isBlank()) {
-        harvestList
-    } else {
-        harvestList.filter {
+    val filteredHarvests = remember(harvestList, searchQuery) {
+        if (searchQuery.isBlank()) harvestList
+        else harvestList.filter {
             it.description.contains(searchQuery, ignoreCase = true) ||
                     it.date.contains(searchQuery, ignoreCase = true)
         }

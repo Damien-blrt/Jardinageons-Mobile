@@ -20,7 +20,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,15 +30,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.jardinageons.data.models.Garden
 import app.jardinageons.presentation.features.garden.components.GardenPlanView
 
+
+/*
+Feature réalisée avec l'aide de l'IA par manque de temps
+ */
 @Composable
 fun GardenScreen(
     viewModel: GardenViewModel = viewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val selectedCanvas = uiState.selectedCanvas
     val selectedGarden = uiState.gardens
         .firstOrNull { it.id == uiState.selectedGardenId }

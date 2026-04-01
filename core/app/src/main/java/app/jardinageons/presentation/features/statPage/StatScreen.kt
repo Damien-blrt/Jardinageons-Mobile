@@ -12,9 +12,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.jardinageons.R
+import app.jardinageons.data.models.Harvest
 import app.jardinageons.data.models.Seed
+import app.jardinageons.data.models.Vegetable
 import app.jardinageons.presentation.features.statPage.charts.BarChart
 import app.jardinageons.presentation.features.statPage.charts.DonutChart
 import app.jardinageons.presentation.features.statPage.charts.LineChart
@@ -45,24 +48,22 @@ private fun seedsExpiryByMonth(
     return months.mapIndexed { i, name -> name to counts[i].toFloat() }
 }
 
-// TODO: décommenter quand HarvestRepository dispo
-// private fun harvestsByMonth(harvests: List<Harvest>, months: List<String>): List<Pair<String, Float>> {
-//     val counts = IntArray(12) { 0 }
-//     harvests.forEach { harvest ->
-//         try {
-//             val month = harvest.date.substring(5, 7).toInt() - 1
-//             if (month in 0..11) counts[month]++
-//         } catch (e: Exception) { /* ignore */ }
-//     }
-//     return months.mapIndexed { i, name -> name to counts[i].toFloat() }
-// }
+private fun harvestsByMonth(harvests: List<Harvest>, months: List<String>): List<Pair<String, Float>> {
+    val counts = IntArray(12) { 0 }
+    harvests.forEach { harvest ->
+        try {
+            val month = harvest.date.substring(5, 7).toInt() - 1
+            if (month in 0..11) counts[month]++
+        } catch (e: Exception) { /* ignore */ }
+    }
+    return months.mapIndexed { i, name -> name to counts[i].toFloat() }
+}
 
-// TODO: décommenter quand HarvestRepository dispo
-// private fun harvestQuantities(harvests: List<Harvest>): List<Pair<String, Float>> {
-//     return harvests.map { harvest ->
-//         harvest.date.substring(0, 10) to harvest.quantity.toFloat()
-//     }
-// }
+private fun harvestQuantities(harvests: List<Harvest>): List<Pair<String, Float>> {
+    return harvests.map { harvest ->
+        harvest.date.substring(0, 10) to harvest.quantity.toFloat()
+    }
+}
 
 // ─── Screen ──────────────────────────────────────────────────────────────────
 
@@ -70,13 +71,12 @@ private fun seedsExpiryByMonth(
 fun StatScreen(
     viewModel: StatViewModel = viewModel()
 ) {
-    val seeds      by viewModel.seeds.collectAsState()
-    val totalSeeds by viewModel.totalSeeds.collectAsState()
-    val isLoading  by viewModel.isLoading.collectAsState()
-    val months     = stringArrayResource(R.array.stat_months).toList()
-
-    // TODO: décommenter quand HarvestRepository dispo
-    // val harvests by viewModel.harvests.collectAsState()
+    val seeds      by viewModel.seeds.collectAsStateWithLifecycle()
+    val totalSeeds by viewModel.totalSeeds.collectAsStateWithLifecycle()
+    val isLoading  by viewModel.isLoading.collectAsStateWithLifecycle()
+    val harvests   by viewModel.harvests.collectAsStateWithLifecycle()
+    val vegetables by viewModel.vegetables.collectAsStateWithLifecycle()
+    val months     = remember { stringArrayResource(R.array.stat_months).toList() }
 
     Scaffold(containerColor = BackgroundColor) { padding ->
         if (isLoading) {
@@ -84,7 +84,7 @@ fun StatScreen(
                 modifier = Modifier.fillMaxSize().padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = Color(0xFF38ef7d))
+                CircularProgressIndicator(color = GradientGreen.first())
             }
         } else {
             LazyColumn(
@@ -115,10 +115,9 @@ fun StatScreen(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        StatKpiCard(stringResource(R.string.stat_kpi_varieties), "${seeds.size}",  GradientGreen,  Modifier.weight(1f))
-                        StatKpiCard(stringResource(R.string.stat_kpi_seeds),     "$totalSeeds",    GradientOrange, Modifier.weight(1f))
-                        StatKpiCard(stringResource(R.string.stat_kpi_vegetables),"-",              GradientBlue,   Modifier.weight(1f))
-                        // TODO: vegetables.size quand VegetableRepository dispo
+                        StatKpiCard(stringResource(R.string.stat_kpi_varieties), "${seeds.size}",      GradientGreen,  Modifier.weight(1f))
+                        StatKpiCard(stringResource(R.string.stat_kpi_seeds),     "$totalSeeds",        GradientOrange, Modifier.weight(1f))
+                        StatKpiCard(stringResource(R.string.stat_kpi_vegetables),"${vegetables.size}", GradientBlue,   Modifier.weight(1f))
                     }
                 }
 
@@ -158,14 +157,16 @@ fun StatScreen(
                 item { StatSectionTitle(stringResource(R.string.stat_section_water_needs)) }
                 item {
                     StatChartCard {
-                        // TODO: décommenter quand VegetableRepository dispo
-                        // BarChart(
-                        //     data     = vegetables.map { it.name to (it.waterNeedsMm?.toFloat() ?: 0f) },
-                        //     gradient = GradientBlue,
-                        //     unit     = "mm",
-                        //     modifier = Modifier.fillMaxWidth().height(200.dp)
-                        // )
-                        StatEmptyState(stringResource(R.string.stat_empty_vegetable_todo))
+                        if (vegetables.isNotEmpty()) {
+                            BarChart(
+                                data     = vegetables.map { it.name to (it.waterNeedsMm?.toFloat() ?: 0f) },
+                                gradient = GradientBlue,
+                                unit     = "mm",
+                                modifier = Modifier.fillMaxWidth().height(200.dp)
+                            )
+                        } else {
+                            StatEmptyState(stringResource(R.string.stat_empty_vegetable_todo))
+                        }
                     }
                 }
 
@@ -173,18 +174,21 @@ fun StatScreen(
                 item { StatSectionTitle(stringResource(R.string.stat_section_sowing_duration)) }
                 item {
                     StatChartCard {
-                        // TODO: décommenter quand VegetableRepository dispo
-                        // val sowingData = vegetables.map { veg ->
-                        //     val months = veg.sowingEnd.monthValue - veg.sowingStart.monthValue + 1
-                        //     veg.name to months.toFloat().coerceAtLeast(1f)
-                        // }
-                        // BarChart(
-                        //     data     = sowingData,
-                        //     gradient = GradientTeal,
-                        //     unit     = "m",
-                        //     modifier = Modifier.fillMaxWidth().height(200.dp)
-                        // )
-                        StatEmptyState(stringResource(R.string.stat_empty_vegetable_todo))
+                        if (vegetables.isNotEmpty()) {
+                            val sowingData = vegetables.map { veg ->
+                                val startMonth = try { veg.sowingStart.substring(5, 7).toInt() } catch (e: Exception) { 1 }
+                                val endMonth   = try { veg.sowingEnd.substring(5, 7).toInt()   } catch (e: Exception) { startMonth }
+                                veg.name to (endMonth - startMonth + 1).coerceAtLeast(1).toFloat()
+                            }
+                            BarChart(
+                                data     = sowingData,
+                                gradient = GradientTeal,
+                                unit     = "m",
+                                modifier = Modifier.fillMaxWidth().height(200.dp)
+                            )
+                        } else {
+                            StatEmptyState(stringResource(R.string.stat_empty_vegetable_todo))
+                        }
                     }
                 }
 
@@ -205,14 +209,16 @@ fun StatScreen(
                 item { StatSectionTitle(stringResource(R.string.stat_section_harvests_by_month)) }
                 item {
                     StatChartCard {
-                        // TODO: décommenter quand HarvestRepository dispo
-                        // LineChart(
-                        //     data     = harvestsByMonth(harvests, months),
-                        //     gradient = GradientTeal,
-                        //     unit     = "",
-                        //     modifier = Modifier.fillMaxWidth().height(200.dp)
-                        // )
-                        StatEmptyState(stringResource(R.string.stat_empty_harvest_todo))
+                        if (harvests.isNotEmpty()) {
+                            LineChart(
+                                data     = harvestsByMonth(harvests, months),
+                                gradient = GradientTeal,
+                                unit     = "",
+                                modifier = Modifier.fillMaxWidth().height(200.dp)
+                            )
+                        } else {
+                            StatEmptyState(stringResource(R.string.stat_empty_harvest_todo))
+                        }
                     }
                 }
 
@@ -220,14 +226,16 @@ fun StatScreen(
                 item { StatSectionTitle(stringResource(R.string.stat_section_harvest_quantities)) }
                 item {
                     StatChartCard {
-                        // TODO: décommenter quand HarvestRepository dispo
-                        // BarChart(
-                        //     data     = harvestQuantities(harvests),
-                        //     gradient = GradientPurple,
-                        //     unit     = "kg",
-                        //     modifier = Modifier.fillMaxWidth().height(200.dp)
-                        // )
-                        StatEmptyState(stringResource(R.string.stat_empty_harvest_todo))
+                        if (harvests.isNotEmpty()) {
+                            BarChart(
+                                data     = harvestQuantities(harvests),
+                                gradient = GradientPurple,
+                                unit     = "kg",
+                                modifier = Modifier.fillMaxWidth().height(200.dp)
+                            )
+                        } else {
+                            StatEmptyState(stringResource(R.string.stat_empty_harvest_todo))
+                        }
                     }
                 }
 
