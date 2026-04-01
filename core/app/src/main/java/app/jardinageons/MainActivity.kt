@@ -1,13 +1,10 @@
 package app.jardinageons
 
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.datastore.core.MultiProcessDataStoreFactory
 import androidx.lifecycle.lifecycleScope
 import app.jardinageons.data.models.LoginRequest
 import app.jardinageons.data.services.RetrofitClient
@@ -19,16 +16,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.jardinageons.data.models.Tokens
 import app.jardinageons.data.storage.TokenManager
-import app.jardinageons.data.storage.TokenSerializer
 import app.jardinageons.data.storage.tokenDataStore
-import app.jardinageons.presentation.features.home.HomeScreen
 import app.jardinageons.presentation.features.login.LoginScreen
 import app.jardinageons.presentation.features.register.RegisterScreen
 import app.jardinageons.presentation.components.AppNavGraph
-import app.jardinageons.presentation.features.seedInventory.SeedInventoryScreen
-import app.jardinageons.presentation.features.vegetable.VegetableScreen
 import app.jardinageons.presentation.theme.JardinageonsTheme
-import java.io.File
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.WorkManager
@@ -63,13 +55,7 @@ class MainActivity : ComponentActivity() {
             JardinageonsTheme {
                 AuthorizeView(
                     authorized = {
-                        val navController = rememberNavController()
-                        NavHost(navController = navController, startDestination = "home") {
-                            composable("home") {
-                                HomeScreen()
-                                AppNavGraph()
-                            }
-                        }
+                        AppNavGraph()
                     },
                     unauthorized = {
                         val navController = rememberNavController()

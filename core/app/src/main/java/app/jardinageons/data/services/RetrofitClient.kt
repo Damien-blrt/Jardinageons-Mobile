@@ -4,130 +4,75 @@ import app.jardinageons.data.interceptors.AuthInterceptor
 import app.jardinageons.data.interceptors.TokenAuthenticator
 import app.jardinageons.data.storage.TokenManager
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-
 
 object RetrofitClient {
 
     private const val BASE_URL =
         "https://codefirst.iut.uca.fr/kubernetes/iut-inf63-projets-etudiants-jardinageons/jardinageons/"
+    private const val BASE_URL_WEATHER = "https://api.openweathermap.org/"
+
     val tokenProvider: () -> String? = {
         TokenManager.accessToken
     }
 
-    private const val BASE_URL_WEATHER = "https://api.openweathermap.org/"
+    private fun buildRetrofit(baseUrl: String, client: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
 
-    val seedService: ISeedService by lazy {
-        val okHttpClient = OkHttpClient.Builder()
+    private fun buildAuthorizedClient(): OkHttpClient {
+        return OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(tokenProvider))
             .authenticator(TokenAuthenticator())
             .build()
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+    }
+
+    private fun buildPublicClient(): OkHttpClient {
+        return OkHttpClient.Builder().build()
+    }
+
+    val seedService: ISeedService by lazy {
+        val retrofit = buildRetrofit(BASE_URL, buildAuthorizedClient())
         retrofit.create(ISeedService::class.java)
     }
 
-
-    val vegetableService: IVegetableService by lazy { // Crée une propriété seedService de type ISeedService initialisée seulement à la première utilisation
-
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(tokenProvider))
-            .authenticator(TokenAuthenticator())
-            .build()
-
-        val retrofit = Retrofit.Builder() // Crée un constructeur Retrofit
-            .baseUrl(BASE_URL) // Définit l'URL de base de l API, tous les endpoints
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            // Ajoute un convertisseur JSON pour transformer les objets Kotlin en JSON et inversement
-            .build() // Construit l'instance Retrofit
-
+    val vegetableService: IVegetableService by lazy {
+        val retrofit = buildRetrofit(BASE_URL, buildAuthorizedClient())
         retrofit.create(IVegetableService::class.java)
-        // Crée automatiquement une implémentation de l'interface ISeedService
-        // on pourra appeler seedService.listSeeds(...)
     }
 
-
     val loginQService: ILoginQService by lazy {
-        val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        }
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(tokenProvider))
-            .authenticator(TokenAuthenticator())
-            .build()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
+        val retrofit = buildRetrofit(BASE_URL, buildPublicClient())
         retrofit.create(ILoginQService::class.java)
     }
 
     val harvestService: HarvestService by lazy {
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(tokenProvider))
-            .authenticator(TokenAuthenticator())
-            .build()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
+        val retrofit = buildRetrofit(BASE_URL, buildAuthorizedClient())
         retrofit.create(HarvestService::class.java)
     }
 
     val growService: IGrowService by lazy {
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(tokenProvider))
-            .authenticator(TokenAuthenticator())
-            .build()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        val retrofit = buildRetrofit(BASE_URL, buildAuthorizedClient())
         retrofit.create(IGrowService::class.java)
     }
 
+    val gardenService: IGardenService by lazy {
+        val retrofit = buildRetrofit(BASE_URL, buildAuthorizedClient())
+        retrofit.create(IGardenService::class.java)
+    }
 
     val weatherService: IWeatherService by lazy {
-        val okHttpClient = OkHttpClient.Builder().build()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL_WEATHER) // On utilise l'URL d'OpenWeatherMap
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create()) // Gson pour traduire le JSON
-            .build()
-
+        val retrofit = buildRetrofit(BASE_URL_WEATHER, buildPublicClient())
         retrofit.create(IWeatherService::class.java)
     }
 
     val adviceService: IAdviceService by lazy {
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(tokenProvider))
-            .authenticator(TokenAuthenticator())
-            .build()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
+        val retrofit = buildRetrofit(BASE_URL, buildAuthorizedClient())
         retrofit.create(IAdviceService::class.java)
     }
-
-
-
 }

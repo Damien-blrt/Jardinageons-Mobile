@@ -3,29 +3,48 @@ package app.jardinageons.presentation.features.home
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
-import app.jardinageons.presentation.components.AnimatedPlantLoader
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -36,7 +55,11 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.jardinageons.R
+import app.jardinageons.presentation.components.AnimatedPlantLoader
 import app.jardinageons.presentation.components.TipCard
+import app.jardinageons.presentation.features.garden.GardenViewModel
+import app.jardinageons.presentation.features.garden.components.GardenPlanView
+import app.jardinageons.presentation.features.garden.model.GardenCanvasModel
 import app.jardinageons.presentation.features.weather.WeatherViewModel
 import app.jardinageons.presentation.features.weather.components.WeatherWidget
 import java.util.Calendar
@@ -44,12 +67,14 @@ import java.util.Calendar
 @Composable
 fun HomeScreen(
     weatherViewModel: WeatherViewModel = viewModel(),
-    homeViewModel: HomeViewModel = viewModel()
+    gardenViewModel: GardenViewModel = viewModel(),
+    homeViewModel: HomeViewModel = viewModel(),
+    onGardenClick: () -> Unit = {}
 ) {
+    val gardenUiState by gardenViewModel.uiState.collectAsState()
     val advices by homeViewModel.advices.collectAsState()
     val isLoading by homeViewModel.isLoading.collectAsState()
 
-    // Récupération du mois en cours
     val currentMonthStr = remember {
         val months = listOf(
             "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
@@ -58,11 +83,16 @@ fun HomeScreen(
         months[Calendar.getInstance().get(Calendar.MONTH)]
     }
 
-    val filteredAdvices = remember(advices) {
-        val normalizedCurrentMonth = currentMonthStr.lowercase().replace("é", "e").replace("û", "u")
+    val filteredAdvices = remember(advices, currentMonthStr) {
+        val normalizedCurrentMonth = currentMonthStr.lowercase()
+            .replace("é", "e")
+            .replace("û", "u")
 
         advices.filter { advice ->
-            val normalizedApiMonth = advice.month?.lowercase()?.replace("é", "e")?.replace("û", "u")
+            val normalizedApiMonth = advice.month
+                ?.lowercase()
+                ?.replace("é", "e")
+                ?.replace("û", "u")
             normalizedApiMonth == normalizedCurrentMonth
         }.take(2)
     }
@@ -72,7 +102,10 @@ fun HomeScreen(
     var hasNotificationPermission by remember {
         mutableStateOf(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
             } else {
                 true
             }
@@ -85,7 +118,6 @@ fun HomeScreen(
         hasNotificationPermission = isGranted
     }
 
-    // Déclenchement automatique du dialogue si la permission n'est pas accordée
     LaunchedEffect(Unit) {
         if (!hasNotificationPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             showDialog = true
@@ -111,8 +143,6 @@ fun HomeScreen(
                 .padding(padding),
             contentPadding = PaddingValues(bottom = 24.dp)
         ) {
-
-            // 1. Section Météo
             item {
                 SectionTitle("Météo en direct")
                 WeatherWidget(
@@ -121,51 +151,40 @@ fun HomeScreen(
                 )
             }
 
-
-            // 2. Section Mon Jardin
-            // 2. Section Notifications (Nouveau !)
             item {
                 SectionTitle("Restez informé")
                 NotificationPromoCard(
                     hasPermission = hasNotificationPermission,
                     onClick = {
-                        if (!hasNotificationPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        if (!hasNotificationPermission &&
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                        ) {
                             showDialog = true
                         }
                     }
                 )
             }
 
-            // 3. Section Image du Jardin
             item {
                 SectionTitle("Mon Jardin")
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .padding(horizontal = 16.dp)
-                        .clip(RoundedCornerShape(24.dp))
-                        .background(Color.LightGray)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.potted_plant),
-                        contentDescription = "Mon Jardin",
-                        modifier = Modifier
-                            .size(64.dp)
-                            .align(Alignment.Center),
-                        alpha = 0.5f
-                    )
-                }
+                HomeGardenCard(
+                    canvasModel = gardenUiState.selectedCanvas,
+                    isLoading = gardenUiState.isLoading,
+                    errorMessage = gardenUiState.errorMessage,
+                    onClick = onGardenClick
+                )
             }
 
-            // 3    . Section Astuces du Mois
             item {
                 SectionTitle("Astuces de $currentMonthStr")
             }
 
             if (isLoading) {
                 item {
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
                         AnimatedPlantLoader(modifier = Modifier.padding(16.dp))
                     }
                 }
@@ -179,15 +198,13 @@ fun HomeScreen(
                 }
             } else {
                 itemsIndexed(filteredAdvices) { index, adviceItem ->
-                    // Définition des couleurs et de l'icône selon la position
                     val gradient = if (index % 2 == 0) {
-                        listOf(Color(0xFF11998e), Color(0xFF38ef7d))
+                        listOf(Color(0xFF11998E), Color(0xFF38EF7D))
                     } else {
-                        listOf(Color(0xFFec008c), Color(0xFFfc6767))
+                        listOf(Color(0xFFEC008C), Color(0xFFFC6767))
                     }
                     val icon = if (index % 2 == 0) "🌱" else "🌸"
 
-                    // Appel du TipCard
                     TipCard(
                         category = adviceItem.titre ?: "Général",
                         description = adviceItem.advice ?: "Pas de description.",
@@ -207,8 +224,20 @@ fun NotificationConfirmDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         shape = RoundedCornerShape(28.dp),
-        icon = { Icon(Icons.Default.Notifications, contentDescription = null, tint = Color(0xFF4CAF50)) },
-        title = { Text(text = "Activer les rappels ?", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold) },
+        icon = {
+            Icon(
+                Icons.Default.Notifications,
+                contentDescription = null,
+                tint = Color(0xFF4CAF50)
+            )
+        },
+        title = {
+            Text(
+                text = "Activer les rappels ?",
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold
+            )
+        },
         text = {
             Text(
                 "Recevez des notifications pour ne plus oublier d'arroser vos légumes. Vous pouvez changer cela dans les réglages à tout moment.",
@@ -220,10 +249,14 @@ fun NotificationConfirmDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
                 onClick = onConfirm,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
                 shape = RoundedCornerShape(12.dp)
-            ) { Text("Confirmer") }
+            ) {
+                Text("Confirmer")
+            }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Plus tard", color = Color.Gray) }
+            TextButton(onClick = onDismiss) {
+                Text("Plus tard", color = Color.Gray)
+            }
         }
     )
 }
@@ -266,10 +299,70 @@ fun NotificationPromoCard(hasPermission: Boolean, onClick: () -> Unit) {
                     fontSize = 16.sp
                 )
                 Text(
-                    text = if (hasPermission) "Vous recevrez des rappels tous les 3 jours." else "Cliquez pour ne plus rien oublier !",
+                    text = if (hasPermission) {
+                        "Vous recevrez des rappels tous les 3 jours."
+                    } else {
+                        "Cliquez pour ne plus rien oublier !"
+                    },
                     fontSize = 13.sp,
                     color = Color.DarkGray
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun HomeGardenCard(
+    canvasModel: GardenCanvasModel?,
+    isLoading: Boolean,
+    errorMessage: String?,
+    onClick: () -> Unit
+) {
+    val cardModifier = Modifier
+        .fillMaxWidth()
+        .height(200.dp)
+        .padding(horizontal = 16.dp)
+
+    if (canvasModel != null) {
+        GardenPlanView(
+            canvasModel = canvasModel,
+            modifier = cardModifier.clickable(onClick = onClick),
+            cornerRadius = 24.dp,
+            contentPadding = 6.dp
+        )
+        return
+    }
+
+    Box(
+        modifier = cardModifier
+            .clip(RoundedCornerShape(24.dp))
+            .background(Color.LightGray)
+            .clickable(onClick = onClick)
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        } else {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.potted_plant),
+                    contentDescription = "Mon Jardin",
+                    modifier = Modifier.size(64.dp),
+                    alpha = 0.5f
+                )
+                errorMessage?.let {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = it,
+                        textAlign = TextAlign.Center,
+                        color = Color.DarkGray
+                    )
+                }
             }
         }
     }
@@ -281,76 +374,7 @@ private fun SectionTitle(title: String) {
         text = title,
         fontSize = 22.sp,
         fontWeight = FontWeight.Bold,
-        color = Color(0xFF1C1C1E), // Noir très foncé pour plus de modernité
+        color = Color(0xFF1C1C1E),
         modifier = Modifier.padding(start = 20.dp, top = 24.dp, bottom = 16.dp)
     )
-}
-
-@Composable
-private fun TipCard(
-    category: String,
-    description: String,
-    icon: String,
-    gradientColors: List<Color>
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(24.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Brush.horizontalGradient(colors = gradientColors))
-        ) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset(x = 40.dp, y = 40.dp)
-                    .size(120.dp)
-                    .clip(CircleShape)
-                    .background(Color.White.copy(alpha = 0.15f))
-            )
-            Row(
-                modifier = Modifier
-                    .padding(20.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(60.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color.White.copy(alpha = 0.2f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = icon, fontSize = 28.sp)
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "💡", fontSize = 14.sp)
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = category.uppercase(),
-                            color = Color.White.copy(alpha = 0.8f),
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = description,
-                        color = Color.White,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Medium,
-                        lineHeight = 22.sp
-                    )
-                }
-            }
-        }
-    }
 }

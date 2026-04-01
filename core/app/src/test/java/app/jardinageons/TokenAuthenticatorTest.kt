@@ -40,8 +40,12 @@ class TokenAuthenticatorTest {
         TokenManager.refreshToken = null
     }
 
-    private fun mockResponse(code: Int = 401, priorCount: Int = 1): Response {
-        val request = Request.Builder().url("http://example.com").build()
+    private fun mockResponse(
+        code: Int = 401,
+        priorCount: Int = 1,
+        url: String = "http://example.com"
+    ): Response {
+        val request = Request.Builder().url(url).build()
         var resp = Response.Builder()
             .request(request)
             .protocol(Protocol.HTTP_1_1)
@@ -67,6 +71,17 @@ class TokenAuthenticatorTest {
         TokenManager.refreshToken = null
         val response = mockResponse()
         val result = authenticator.authenticate(null, response)
+        assertNull(result)
+    }
+
+    @Test
+    fun `authenticate returns null for refresh endpoint to avoid recursion`() {
+        val response = mockResponse(
+            url = "https://example.com/authentication/refresh"
+        )
+
+        val result = authenticator.authenticate(null, response)
+
         assertNull(result)
     }
 
