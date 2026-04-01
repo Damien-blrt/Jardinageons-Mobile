@@ -20,6 +20,7 @@ object BottomBarRoutes {
     const val INVENTORY = "inventory"
     const val HISTORY = "history"
     const val STATS = "statistics"
+    const val VEGETABLE = "vegetable"
 }
 
 val bottomBarDestinations = listOf(
@@ -47,7 +48,12 @@ val bottomBarDestinations = listOf(
         route = BottomBarRoutes.STATS,
         label = "Stats",
         iconResId = R.drawable.stats
-)
+    ),
+    BottomBarDestination(
+        route = BottomBarRoutes.VEGETABLE,
+        label = "Fiches Légumes",
+        iconResId = R.drawable.watter
+    )
 )
 
 @Composable

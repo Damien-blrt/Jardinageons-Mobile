@@ -1,3 +1,5 @@
+[![Quality gate](https://codefirst.iut.uca.fr/sonarqube/api/project_badges/quality_gate?project=Kotlin&token=sqb_a207625e80e68d4bcd1c2721fdfc3297a64207ac)](https://codefirst.iut.uca.fr/sonarqube/dashboard?id=Kotlin)
+
 <img src="/Documentation/images/logo_banniere.png" >
 
 # 🌱 Jardinageons — Partie Mobile

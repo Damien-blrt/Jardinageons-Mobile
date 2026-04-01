@@ -56,7 +56,9 @@ fun InputComponent(
             )
 
         }
-
+    /**
+        * doc: https://developer.android.com/develop/ui/compose/components/datepickers?hl=fr
+    */
         InputType.DATE -> {
 
             var showDatePicker by remember { mutableStateOf(false) }
