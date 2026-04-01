@@ -2,16 +2,13 @@
     <string name="app_name">Jardinageons</string>
 
 
-
-
-
     <!-- Navigation -->
     <string name="nav_home">Accueil</string>
     <string name="nav_garden">Potager</string>
     <string name="nav_inventory">Inventaire</string>
     <string name="nav_history">Historique</string>
     <string name="nav_stats">Stats</string>
-    <string name="nav_vegetables">Fiches Légumes</string>
+    <string name="nav_vegetables">Légumes</string>
 
     <!-- Stats -->
     <string name="stat_title">Statistiques</string>

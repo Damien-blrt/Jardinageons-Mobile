@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.sp
 import app.jardinageons.R
 
 data class BottomBarDestination(
@@ -27,12 +28,36 @@ object BottomBarRoutes {
 }
 
 val bottomBarDestinations = listOf(
-    BottomBarDestination(route = BottomBarRoutes.HOME,      labelRes = R.string.nav_home,       iconResId = R.drawable.home),
-    BottomBarDestination(route = BottomBarRoutes.GARDEN,    labelRes = R.string.nav_garden,     iconResId = R.drawable.potted_plant),
-    BottomBarDestination(route = BottomBarRoutes.INVENTORY, labelRes = R.string.nav_inventory,  iconResId = R.drawable.inventory),
-    BottomBarDestination(route = BottomBarRoutes.HISTORY,   labelRes = R.string.nav_history,    iconResId = R.drawable.clock_arrow_down),
-    BottomBarDestination(route = BottomBarRoutes.STATS,     labelRes = R.string.nav_stats,      iconResId = R.drawable.stats),
-    BottomBarDestination(route = BottomBarRoutes.VEGETABLE, labelRes = R.string.nav_vegetables, iconResId = R.drawable.watter),
+    BottomBarDestination(
+        route = BottomBarRoutes.HOME,
+        labelRes = R.string.nav_home,
+        iconResId = R.drawable.home
+    ),
+    BottomBarDestination(
+        route = BottomBarRoutes.GARDEN,
+        labelRes = R.string.nav_garden,
+        iconResId = R.drawable.potted_plant
+    ),
+    BottomBarDestination(
+        route = BottomBarRoutes.INVENTORY,
+        labelRes = R.string.nav_inventory,
+        iconResId = R.drawable.inventory
+    ),
+    BottomBarDestination(
+        route = BottomBarRoutes.HISTORY,
+        labelRes = R.string.nav_history,
+        iconResId = R.drawable.clock_arrow_down
+    ),
+    BottomBarDestination(
+        route = BottomBarRoutes.STATS,
+        labelRes = R.string.nav_stats,
+        iconResId = R.drawable.stats
+    ),
+    BottomBarDestination(
+        route = BottomBarRoutes.VEGETABLE,
+        labelRes = R.string.nav_vegetables,
+        iconResId = R.drawable.watter
+    ),
 )
 
 @Composable
@@ -52,7 +77,7 @@ fun AppBottomBar(
                         contentDescription = label
                     )
                 },
-                label = { Text(label) }
+                label = { Text(label, fontSize = 10.sp) }
             )
         }
     }
