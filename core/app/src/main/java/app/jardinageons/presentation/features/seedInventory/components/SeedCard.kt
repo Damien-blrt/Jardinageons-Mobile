@@ -1,6 +1,7 @@
 package app.jardinageons.presentation.features.seedInventory.components
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxSize
+import coil.compose.AsyncImage
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -57,9 +57,9 @@ fun SeedCard(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.width(256.dp)
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.tomate),
-                    contentDescription = "Photo de tomate",
+                AsyncImage(
+                    model = R.drawable.seed,
+                    contentDescription = null,
                     modifier = Modifier.size(64.dp)
                 )
                 Text(
