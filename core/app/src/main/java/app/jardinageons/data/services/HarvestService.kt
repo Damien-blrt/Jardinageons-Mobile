@@ -1,9 +1,9 @@
-package app.jardinageons.data.services;
+package app.jardinageons.data.services
 
 import app.jardinageons.data.annotations.InjectAuth
 import app.jardinageons.data.models.Harvest
+import app.jardinageons.data.models.HarvestRequest
 import app.jardinageons.data.models.PagedResponse
-import app.jardinageons.presentation.features.harvest.HarvestRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -13,7 +13,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-public interface HarvestService {
+interface HarvestService {
     @InjectAuth
     @GET("api/v1/Harvest")
     suspend fun listHarvests(

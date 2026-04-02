@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">Jardinageons</string>
 
-
     <!-- Navigation -->
     <string name="nav_home">Accueil</string>
     <string name="nav_garden">Potager</string>
@@ -9,6 +8,137 @@
     <string name="nav_history">Historique</string>
     <string name="nav_stats">Stats</string>
     <string name="nav_vegetables">Légumes</string>
+
+    <!-- Common -->
+    <string name="common_ok">OK</string>
+    <string name="common_create">Créer</string>
+    <string name="common_cancel">Annuler</string>
+    <string name="common_save">Enregistrer</string>
+    <string name="common_delete">Supprimer</string>
+    <string name="common_confirm">Confirmer</string>
+    <string name="common_confirm_delete">Confirmer la suppression</string>
+    <string name="common_retry">Réessayer</string>
+    <string name="common_name">Nom</string>
+    <string name="common_description">Description</string>
+    <string name="common_quantity">Quantité</string>
+    <string name="common_no">Non</string>
+
+    <!-- Login -->
+    <string name="login_welcome">Bienvenue</string>
+    <string name="login_email">Email</string>
+    <string name="login_password">Mot de passe</string>
+    <string name="login_button">Se connecter</string>
+    <string name="login_register_button">Créer un compte</string>
+
+    <!-- Register -->
+    <string name="register_title">Créer un compte</string>
+    <string name="register_email">Adresse email</string>
+    <string name="register_confirm_password">Confirmer le mot de passe</string>
+    <string name="register_button">S\'inscrire</string>
+    <string name="register_already_have_account">J\'ai déjà un compte</string>
+
+    <!-- Home -->
+    <string name="home_weather_title">Météo en direct</string>
+    <string name="home_stay_informed">Restez informé</string>
+    <string name="home_my_garden">Mon Jardin</string>
+    <string name="home_tips_of_month">Astuces de %1$s</string>
+    <string name="home_no_advice">Aucun conseil spécifique pour le mois de %1$s.</string>
+    <string name="home_notif_dialog_title">Activer les rappels ?</string>
+    <string name="home_notif_dialog_text">Recevez des notifications pour ne plus oublier d\'arroser vos légumes. Vous pouvez changer cela dans les réglages à tout moment.</string>
+    <string name="home_notif_later">Plus tard</string>
+    <string name="home_notif_active_title">Notifications Activées</string>
+    <string name="home_notif_watering_title">Rappels d\'arrosage</string>
+    <string name="home_notif_active_desc">Vous recevrez des rappels tous les 3 jours.</string>
+    <string name="home_notif_inactive_desc">Cliquez pour ne plus rien oublier !</string>
+    <string name="home_category_general">Général</string>
+    <string name="home_no_description">Pas de description.</string>
+
+    <!-- Months (full names) -->
+    <string-array name="months_full">
+        <item>Janvier</item>
+        <item>Février</item>
+        <item>Mars</item>
+        <item>Avril</item>
+        <item>Mai</item>
+        <item>Juin</item>
+        <item>Juillet</item>
+        <item>Août</item>
+        <item>Septembre</item>
+        <item>Octobre</item>
+        <item>Novembre</item>
+        <item>Décembre</item>
+    </string-array>
+
+    <!-- Seed Inventory -->
+    <string name="seed_added_success">Graine ajoutée avec succès</string>
+    <string name="seed_modified_success">Graine modifiée avec succès</string>
+    <string name="seed_deleted_success">Graine supprimée avec succès</string>
+    <string name="seed_modified_error">Erreur : graine non modifiée</string>
+    <string name="seed_added_error">Erreur : graine non ajoutée</string>
+    <string name="seed_deleted_error">Erreur : graine non supprimée</string>
+    <string name="seed_search">Rechercher une variété</string>
+    <string name="seed_varieties">Variétés</string>
+    <string name="seed_total">Graines total</string>
+    <string name="seed_avg_germination">Germination moy.</string>
+    <string name="seed_my_inventory">Mon inventaire</string>
+    <string name="seed_create_title">Créer une variété</string>
+    <string name="seed_name_label">Nom de Légume</string>
+    <string name="seed_germination_label">Temps de germination(en nombre de jours)</string>
+    <string name="seed_expiry_label">Date d\'expiration</string>
+    <string name="seed_edit_title">Modifier la variété</string>
+    <string name="seed_delete_confirm_message">Es-tu sûr de vouloir supprimer la variété %1$s ? Cette action est irréversible.</string>
+    <string name="seed_count_label">Graines</string>
+    <string name="seed_germination_info">Germination</string>
+    <string name="seed_germination_days">%1$d jours</string>
+    <string name="seed_expiry_info">Expiration</string>
+
+    <!-- Vegetable -->
+    <string name="vegetable_added_success">Légume ajouté avec succès</string>
+    <string name="vegetable_modified_success">Légume modifié avec succès</string>
+    <string name="vegetable_deleted_success">Légume supprimé avec succès</string>
+    <string name="vegetable_modified_error">Erreur : légume non modifié</string>
+    <string name="vegetable_added_error">Erreur : légume non ajouté</string>
+    <string name="vegetable_deleted_error">Erreur : légume non supprimé</string>
+    <string name="vegetable_search">Rechercher un légume</string>
+    <string name="vegetable_total">Total légumes</string>
+    <string name="vegetable_catalog">Catalogue des légumes</string>
+    <string name="vegetable_create_title">Nouveau légume</string>
+    <string name="vegetable_germination_label">Germination (jours)</string>
+    <string name="vegetable_sowing_start">Début semis</string>
+    <string name="vegetable_sowing_end">Fin semis</string>
+    <string name="vegetable_harvest_start">Début récolte</string>
+    <string name="vegetable_harvest_end">Fin récolte</string>
+    <string name="vegetable_edit_title">Modifier</string>
+    <string name="vegetable_sowing_start_alt">Semis début</string>
+    <string name="vegetable_sowing_end_alt">Semis fin</string>
+    <string name="vegetable_delete_confirm_title">Supprimer ?</string>
+    <string name="vegetable_sowing">Semis</string>
+    <string name="vegetable_harvest_label">Récolte</string>
+    <string name="vegetable_date_range">%1$s au %2$s</string>
+
+    <!-- Garden -->
+    <string name="garden_title">Mon potager</string>
+    <string name="garden_no_plan">Ce jardin ne contient pas encore de plan.</string>
+    <string name="garden_unavailable">Aucun jardin disponible.</string>
+    <string name="garden_selector_label">Jardin</string>
+
+    <!-- Harvest -->
+    <string name="harvest_modified_success">Récolte modifiée avec succès</string>
+    <string name="harvest_deleted_success">Récolte supprimée avec succès</string>
+    <string name="harvest_modified_error">Erreur : Récolte non modifiée</string>
+    <string name="harvest_deleted_error">Erreur : Récolte non supprimée</string>
+    <string name="harvest_search">Rechercher une récolte</string>
+    <string name="harvest_count_label">Récoltes</string>
+    <string name="harvest_kg_total">Kg total</string>
+    <string name="harvest_my_harvests">Mes récoltes</string>
+    <string name="harvest_edit_title">Modifier la récolte</string>
+    <string name="harvest_quantity_label">Quantité (kg)</string>
+    <string name="harvest_date_label">Date de récolte</string>
+    <string name="harvest_delete_confirm_message">Es-tu sûr de vouloir supprimer cette récolte ? Cette action est irréversible.</string>
+    <string name="harvest_kg_unit">KG</string>
+    <string name="harvest_date_info">Date</string>
+    <string name="harvest_plant_info">Plante</string>
+    <string name="harvest_plant_id">#%1$d</string>
 
     <!-- Stats -->
     <string name="stat_title">Statistiques</string>
@@ -59,4 +189,3 @@
         <item>Déc</item>
     </string-array>
 </resources>
-

@@ -21,10 +21,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.jardinageons.R
 import app.jardinageons.data.models.Harvest
 import app.jardinageons.presentation.features.seedInventory.components.Info
 
@@ -82,7 +84,7 @@ fun HarvestCard(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "KG",
+                        text = stringResource(R.string.harvest_kg_unit),
                         color = Color.White,
                         fontSize = 14.sp,
                         textAlign = TextAlign.Center,
@@ -108,7 +110,7 @@ fun HarvestCard(
                             tint = Color(0xFF46A24A)
                         )
                     },
-                    title = "Date",
+                    title = stringResource(R.string.harvest_date_info),
                     value = harvest.date,
                     backgroundColor = Color(0xFFF0FFF0)
                 )
@@ -124,8 +126,8 @@ fun HarvestCard(
                             tint = Color.Blue
                         )
                     },
-                    title = "Plante",
-                    value = "#${harvest.plantId}",
+                    title = stringResource(R.string.harvest_plant_info),
+                    value = stringResource(R.string.harvest_plant_id, harvest.plantId),
                     backgroundColor = Color(0xFFF0F4FF)
                 )
             }

@@ -38,10 +38,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import app.jardinageons.R
 import app.jardinageons.data.models.Vegetable
 import app.jardinageons.presentation.features.seedInventory.components.StatCard
 import app.jardinageons.presentation.features.vegetable.components.CreateVegetableModal
@@ -56,30 +58,34 @@ fun VegetableScreen(
     viewModel: VegetableViewModel = viewModel()
 ) {
     val vegetableList by viewModel.vegetables.collectAsStateWithLifecycle()
+    val filteredVegetables by viewModel.filteredVegetables.collectAsStateWithLifecycle()
+    val searchedVegetableName by viewModel.searchQuery.collectAsStateWithLifecycle()
     val totalVegetables by viewModel.totalVegetables.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
     var selectedVegetableForEdit by remember { mutableStateOf<Vegetable?>(null) }
     var createButtonClicked by remember { mutableStateOf(false) }
-    var searchedVegetableName by remember { mutableStateOf("") }
 
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val msgAddSuccess = stringResource(R.string.vegetable_added_success)
+    val msgModifiedSuccess = stringResource(R.string.vegetable_modified_success)
+    val msgDeleteSuccess = stringResource(R.string.vegetable_deleted_success)
+    val msgModifiedError = stringResource(R.string.vegetable_modified_error)
+    val msgAddError = stringResource(R.string.vegetable_added_error)
+    val msgDeleteError = stringResource(R.string.vegetable_deleted_error)
 
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { event ->
             when (event) {
-                Event.addSuccess -> snackbarHostState.showSnackbar("Légume ajouté avec succès")
-                Event.modifiedSuccess -> snackbarHostState.showSnackbar("Légume modifié avec succès")
-                Event.deleteSuccess -> snackbarHostState.showSnackbar("Légume supprimé avec succès")
-                Event.modifiedError -> snackbarHostState.showSnackbar("Erreur : légume non modifié")
-                Event.addError -> snackbarHostState.showSnackbar("Erreur : légume non ajouté")
-                Event.deleteError -> snackbarHostState.showSnackbar("Erreur : légume non supprimé")
+                Event.addSuccess -> snackbarHostState.showSnackbar(msgAddSuccess)
+                Event.modifiedSuccess -> snackbarHostState.showSnackbar(msgModifiedSuccess)
+                Event.deleteSuccess -> snackbarHostState.showSnackbar(msgDeleteSuccess)
+                Event.modifiedError -> snackbarHostState.showSnackbar(msgModifiedError)
+                Event.addError -> snackbarHostState.showSnackbar(msgAddError)
+                Event.deleteError -> snackbarHostState.showSnackbar(msgDeleteError)
             }
         }
-    }
-
-    val filteredVegetables = remember(vegetableList, searchedVegetableName) {
-        vegetableList.filter { it.name.contains(searchedVegetableName, ignoreCase = true) }
     }
 
     Scaffold(
@@ -121,7 +127,7 @@ fun VegetableScreen(
                     item {
                         OutlinedTextField(
                             value = searchedVegetableName,
-                            onValueChange = { searchedVegetableName = it },
+                            onValueChange = { viewModel.setSearchQuery(it) },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.Search,
@@ -129,7 +135,7 @@ fun VegetableScreen(
                                     tint = Color.Gray
                                 )
                             },
-                            label = { Text("Rechercher un légume") },
+                            label = { Text(stringResource(R.string.vegetable_search)) },
                             shape = RoundedCornerShape(15.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = Color.Green,
@@ -150,7 +156,7 @@ fun VegetableScreen(
                         ) {
                             StatCard(
                                 value = "${vegetableList.size}",
-                                label = "Variétés",
+                                label = stringResource(R.string.seed_varieties),
                                 gradient = Brush.verticalGradient(
                                     listOf(LightGreen, DarkGreen)
                                 ),
@@ -161,7 +167,7 @@ fun VegetableScreen(
 
                             StatCard(
                                 value = "$totalVegetables",
-                                label = "Total légumes",
+                                label = stringResource(R.string.vegetable_total),
                                 gradient = Brush.verticalGradient(
                                     listOf(LightGreen, DarkGreen)
                                 ),
@@ -176,7 +182,7 @@ fun VegetableScreen(
 
                     item {
                         Text(
-                            text = "Catalogue des légumes",
+                            text = stringResource(R.string.vegetable_catalog),
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -186,7 +192,7 @@ fun VegetableScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                     }
 
-                    items(items = filteredVegetables) { vegetable ->
+                    items(items = filteredVegetables, key = { it.id }) { vegetable ->
                         VegetableCard(
                             vegetable = vegetable,
                             color = Color(0xFF4CAF50),

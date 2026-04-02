@@ -1,9 +1,7 @@
 package app.jardinageons.presentation.features.seedInventory
 
-import app.jardinageons.presentation.components.AnimatedPlantLoader
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,7 +18,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -30,21 +27,23 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import app.jardinageons.R
 import app.jardinageons.data.models.Seed
+import app.jardinageons.presentation.components.AnimatedPlantLoader
 import app.jardinageons.presentation.features.seedInventory.components.CreateSeedModal
 import app.jardinageons.presentation.features.seedInventory.components.EditSeedModal
 import app.jardinageons.presentation.features.seedInventory.components.SeedCard
@@ -56,9 +55,6 @@ import app.jardinageons.presentation.theme.LightBlue
 import app.jardinageons.presentation.theme.LightGreen
 import app.jardinageons.presentation.theme.LightOrange
 import app.jardinageons.presentation.theme.Purple
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun SeedInventoryScreen(
@@ -70,23 +66,28 @@ fun SeedInventoryScreen(
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
     var selectedSeedForEdit by remember { mutableStateOf<Seed?>(null) }
-    var createButtonClicked by remember { mutableStateOf<Boolean>(false) }
-
+    var createButtonClicked by remember { mutableStateOf(false) }
     var searchedSeedName by remember { mutableStateOf("") }
 
-    //doc : https://developer.android.com/develop/ui/compose/components/snackbar?hl=fr
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val msgAddSuccess = stringResource(R.string.seed_added_success)
+    val msgModifiedSuccess = stringResource(R.string.seed_modified_success)
+    val msgDeleteSuccess = stringResource(R.string.seed_deleted_success)
+    val msgModifiedError = stringResource(R.string.seed_modified_error)
+    val msgAddError = stringResource(R.string.seed_added_error)
+    val msgDeleteError = stringResource(R.string.seed_deleted_error)
 
     //doc : https://developer.android.com/develop/ui/compose/side-effects
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { message ->
             when (message) {
-                Event.addSuccess -> snackbarHostState.showSnackbar("Graine ajoutée avec succès")
-                Event.modifiedSuccess -> snackbarHostState.showSnackbar("Graine modifiée avec succès")
-                Event.deleteSuccess -> snackbarHostState.showSnackbar("Graine supprimée avec succès")
-                Event.modifiedError -> snackbarHostState.showSnackbar("Erreur : graine non modifiée")
-                Event.addError -> snackbarHostState.showSnackbar("Erreur : graine non ajoutée")
-                Event.deleteError -> snackbarHostState.showSnackbar("Erreur : graine non supprimée")
+                Event.addSuccess -> snackbarHostState.showSnackbar(msgAddSuccess)
+                Event.modifiedSuccess -> snackbarHostState.showSnackbar(msgModifiedSuccess)
+                Event.deleteSuccess -> snackbarHostState.showSnackbar(msgDeleteSuccess)
+                Event.modifiedError -> snackbarHostState.showSnackbar(msgModifiedError)
+                Event.addError -> snackbarHostState.showSnackbar(msgAddError)
+                Event.deleteError -> snackbarHostState.showSnackbar(msgDeleteError)
             }
         }
     }
@@ -99,39 +100,12 @@ fun SeedInventoryScreen(
         } else {
             Box(modifier = Modifier.fillMaxSize()) {
 
-                /**
-                 * La syntaxe selectedSeedForEdit?.let a été générée par une IA. De ce que j'ai compris
-                 * c'est une manière plus sécurisée de vérifier si une variable est pas nulle avant de l'utiliser
-                 * */
                 selectedSeedForEdit?.let {
                     EditSeedModal(
                         seed = it,
                         onDismiss = { selectedSeedForEdit = null },
                         onSave = { updatedSeed ->
-                            /**
-                             * doc: https://developer.android.com/reference/java/text/DateFormat
-                             */
-                            val isoDate = try {
-                                val inputFormat =
-                                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                                val outputFormat =
-                                    SimpleDateFormat(
-                                        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-                                        Locale.getDefault()
-                                    )
-                                val date = inputFormat.parse(updatedSeed.expiryDate)
-                                outputFormat.format(date)
-                            } catch (e: Exception) {
-                                SimpleDateFormat(
-                                    "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-                                    Locale.getDefault()
-                                ).format(
-                                    Date()
-                                )
-                            }
-                            val seed = updatedSeed.copy(expiryDate = isoDate)
-
-                            viewModel.updateSeed(seed.id, seed)
+                            viewModel.updateSeed(updatedSeed.id, updatedSeed)
                             selectedSeedForEdit = null
                         },
                         onDelete = { id ->
@@ -145,56 +119,22 @@ fun SeedInventoryScreen(
                     CreateSeedModal(
                         onDismiss = { createButtonClicked = false },
                         onSave = { newSeed ->
-                            /**
-                             * doc: https://developer.android.com/reference/java/text/DateFormat
-                             */
-                            val isoDate = try {
-                                val inputFormat =
-                                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                                val outputFormat =
-                                    SimpleDateFormat(
-                                        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-                                        Locale.getDefault()
-                                    )
-                                val date = inputFormat.parse(newSeed.expiryDate)
-                                outputFormat.format(date)
-                            } catch (e: Exception) {
-                                SimpleDateFormat(
-                                    "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-                                    Locale.getDefault()
-                                ).format(
-                                    Date()
-                                )
-                            }
-
-                            val request = SeedRequest(
-                                name = newSeed.name,
-                                quantity = newSeed.quantity,
-                                germinationTime = newSeed.germinationTime,
-                                description = newSeed.description,
-                                vegetableId = 1,
-                                expiryDate = isoDate
-                            )
-
-                            viewModel.createSeed(request)
+                            viewModel.createSeed(newSeed)
                             createButtonClicked = false
                         }
                     )
                 }
-                LazyColumn(Modifier.padding(10.dp)) {
 
-                    //item {
-                    //WeatherWidget(
-                    //viewModel = weatherViewModel,
-                    //modifier = Modifier.padding(bottom = 16.dp)
-                    //)
-                    //}
+                val filteredSeeds = remember(seedList, searchedSeedName) {
+                    if (searchedSeedName.isBlank()) seedList
+                    else seedList.filter { it.name.contains(searchedSeedName, ignoreCase = true) }
+                }
+
+                LazyColumn(Modifier.padding(10.dp)) {
                     item {
                         OutlinedTextField(
                             value = searchedSeedName,
-                            onValueChange = { newText ->
-                                searchedSeedName = newText
-                            },
+                            onValueChange = { searchedSeedName = it },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.Search,
@@ -202,7 +142,7 @@ fun SeedInventoryScreen(
                                     tint = Color.Gray
                                 )
                             },
-                            label = { Text("Rechercher une variété") },
+                            label = { Text(stringResource(R.string.seed_search)) },
                             shape = RoundedCornerShape(15.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = Color.Green,
@@ -222,52 +162,41 @@ fun SeedInventoryScreen(
                         ) {
                             StatCard(
                                 value = "${seedList.size}",
-                                label = "Variétés",
-                                gradient = Brush.verticalGradient(
-                                    listOf(LightGreen, DarkGreen)
-                                ),
+                                label = stringResource(R.string.seed_varieties),
+                                gradient = Brush.verticalGradient(listOf(LightGreen, DarkGreen)),
                                 modifier = Modifier.weight(1f)
                             )
-
                             StatCard(
-                                value = "${totalSeeds}",
-                                label = "Graines total",
-                                gradient = Brush.verticalGradient(
-                                    listOf(LightOrange, DarkOrange)
-                                ),
+                                value = "$totalSeeds",
+                                label = stringResource(R.string.seed_total),
+                                gradient = Brush.verticalGradient(listOf(LightOrange, DarkOrange)),
                                 modifier = Modifier.weight(1f)
                             )
-
                             StatCard(
                                 value = "${averageGerminationTime}j",
-                                label = "Germination moy.",
-                                gradient = Brush.verticalGradient(
-                                    listOf(LightBlue, Purple)
-                                ),
+                                label = stringResource(R.string.seed_avg_germination),
+                                gradient = Brush.verticalGradient(listOf(LightBlue, Purple)),
                                 modifier = Modifier.weight(1f)
                             )
                         }
                     }
-                    item {
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
+                    item { Spacer(modifier = Modifier.height(12.dp)) }
                     item {
                         Text(
-                            text = "Mon inventaire", fontSize = 22.sp,
+                            text = stringResource(R.string.seed_my_inventory),
+                            fontSize = 22.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
-                    item {
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                    items(items = seedList) { seed ->
+                    item { Spacer(modifier = Modifier.height(8.dp)) }
+                    items(items = filteredSeeds, key = { it.id }) { seed ->
                         SeedCard(seed = seed, color = Color(0xFFFB2B37), onClick = {
                             selectedSeedForEdit = seed
                         })
                         Spacer(modifier = Modifier.height(8.dp))
                     }
-
                 }
+
                 Button(
                     onClick = { createButtonClicked = true },
                     modifier = Modifier

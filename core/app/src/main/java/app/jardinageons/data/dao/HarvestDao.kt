@@ -1,4 +1,4 @@
-package app.jardinageons.data.dao;
+package app.jardinageons.data.dao
 
 import androidx.room.Dao
 import androidx.room.Delete

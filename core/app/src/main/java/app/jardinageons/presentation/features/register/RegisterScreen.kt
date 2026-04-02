@@ -5,9 +5,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.jardinageons.R
 import app.jardinageons.presentation.components.ButtonComponent
 import app.jardinageons.presentation.components.ButtonVariant
 import app.jardinageons.presentation.components.InputComponent
@@ -30,7 +32,7 @@ fun RegisterScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Créer un compte",
+            text = stringResource(R.string.register_title),
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 48.dp)
@@ -38,7 +40,7 @@ fun RegisterScreen(
 
         InputComponent(
             value = email,
-            label = "Adresse email",
+            label = stringResource(R.string.register_email),
             variant = InputType.CLASSIC,
             onValueChange = { email = it },
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
@@ -46,7 +48,7 @@ fun RegisterScreen(
 
         InputComponent(
             value = password,
-            label = "Mot de passe",
+            label = stringResource(R.string.login_password),
             variant = InputType.CLASSIC,
             onValueChange = { password = it },
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
@@ -54,14 +56,14 @@ fun RegisterScreen(
 
         InputComponent(
             value = confirmPassword,
-            label = "Confirmer le mot de passe",
+            label = stringResource(R.string.register_confirm_password),
             variant = InputType.CLASSIC,
             onValueChange = { confirmPassword = it },
             modifier = Modifier.fillMaxWidth().padding(bottom = 48.dp)
         )
 
         ButtonComponent(
-            label = "S'inscrire",
+            label = stringResource(R.string.register_button),
             variant = ButtonVariant.PRIMARY,
             onClick = {
                 if (password == confirmPassword && email.isNotEmpty() && password.isNotEmpty()) {
@@ -72,7 +74,7 @@ fun RegisterScreen(
         )
 
         ButtonComponent(
-            label = "J'ai déjà un compte",
+            label = stringResource(R.string.register_already_have_account),
             variant = ButtonVariant.SECONDARY,
             onClick = onLoginClick,
             modifier = Modifier.fillMaxWidth()

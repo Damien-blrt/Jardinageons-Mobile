@@ -1,21 +1,22 @@
-package app.jardinageons.data.repositories;
+package app.jardinageons.data.repositories
 
 import android.util.Log
 import app.jardinageons.data.dao.HarvestDao
 import app.jardinageons.data.entities.HarvestEntity
 import app.jardinageons.data.models.Harvest
+import app.jardinageons.data.models.HarvestRequest
 import app.jardinageons.data.services.HarvestService
-import app.jardinageons.presentation.features.harvest.HarvestRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
-public class HarvestRepository(private val _service: HarvestService,
-    private val harvestDao: HarvestDao) {
-
-    private val pageIndex = 0;
-    private val countPerPage = 10;
+class HarvestRepository(
+    private val _service: HarvestService,
+    private val harvestDao: HarvestDao
+) {
+    private val pageIndex = 0
+    private val countPerPage = 10
 
     fun getHarvestsFlow(): Flow<List<Harvest>> {
         return harvestDao.loadHarvests().map { entities ->
@@ -30,10 +31,10 @@ public class HarvestRepository(private val _service: HarvestService,
             }
         }
     }
+
     suspend fun refreshHarvests(pageIndex: Int = this.pageIndex, countPerPage: Int = this.countPerPage) {
         try {
             val response = _service.listHarvests(pageIndex, countPerPage)
-
             val entities = response.items.map {
                 HarvestEntity(
                     id = it.id,
@@ -48,8 +49,8 @@ public class HarvestRepository(private val _service: HarvestService,
         } catch (e: Exception) {
             throw e
         }
-
     }
+
     suspend fun createHarvest(harvest: HarvestRequest) {
         return withContext(Dispatchers.IO) {
             _service.createHarvest(harvest)

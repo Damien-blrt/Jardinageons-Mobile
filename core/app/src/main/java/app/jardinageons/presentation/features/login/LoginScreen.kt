@@ -5,9 +5,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.jardinageons.R
 import app.jardinageons.presentation.components.ButtonComponent
 import app.jardinageons.presentation.components.ButtonVariant
 import app.jardinageons.presentation.components.InputComponent
@@ -29,7 +31,7 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Bienvenue",
+            text = stringResource(R.string.login_welcome),
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 48.dp)
@@ -37,7 +39,7 @@ fun LoginScreen(
 
         InputComponent(
             value = login,
-            label = "Email",
+            label = stringResource(R.string.login_email),
             variant = InputType.CLASSIC,
             onValueChange = { login = it },
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
@@ -45,21 +47,21 @@ fun LoginScreen(
 
         InputComponent(
             value = password,
-            label = "Mot de passe",
+            label = stringResource(R.string.login_password),
             variant = InputType.CLASSIC,
             onValueChange = { password = it },
             modifier = Modifier.fillMaxWidth().padding(bottom = 48.dp)
         )
 
         ButtonComponent(
-            label = "Se connecter",
+            label = stringResource(R.string.login_button),
             variant = ButtonVariant.PRIMARY,
             onClick = { onLoginClick(login, password) },
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
         )
 
         ButtonComponent(
-            label = "Créer un compte",
+            label = stringResource(R.string.login_register_button),
             variant = ButtonVariant.SECONDARY,
             onClick = onRegisterClick,
             modifier = Modifier.fillMaxWidth()

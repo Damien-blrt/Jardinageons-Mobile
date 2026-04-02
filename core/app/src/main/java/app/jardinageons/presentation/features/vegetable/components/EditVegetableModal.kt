@@ -17,7 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import app.jardinageons.R
 import app.jardinageons.data.models.Vegetable
 import app.jardinageons.presentation.components.ButtonComponent
 import app.jardinageons.presentation.components.ButtonVariant
@@ -55,23 +57,23 @@ fun EditVegetableModal(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Modifier") },
+        title = { Text(stringResource(R.string.vegetable_edit_title)) },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState()), Arrangement.spacedBy(8.dp)) {
-                InputComponent(value = name, label = "Nom", onValueChange = { name = it })
+                InputComponent(value = name, label = stringResource(R.string.common_name), onValueChange = { name = it })
                 InputComponent(
                     value = germination,
-                    label = "Germination (jours)",
+                    label = stringResource(R.string.vegetable_germination_label),
                     variant = InputType.NUMBER,
                     onValueChange = { germination = it })
                 InputComponent(
                     value = sowingStart,
-                    label = "Semis début",
+                    label = stringResource(R.string.vegetable_sowing_start_alt),
                     variant = InputType.DATE,
                     onValueChange = { sowingStart = it })
                 InputComponent(
                     value = sowingEnd,
-                    label = "Semis fin",
+                    label = stringResource(R.string.vegetable_sowing_end_alt),
                     variant = InputType.DATE,
                     onValueChange = { sowingEnd = it })
             }
@@ -80,7 +82,7 @@ fun EditVegetableModal(
             Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
                 ButtonComponent(
                     onClick = { showConfirm = true },
-                    label = "Supprimer",
+                    label = stringResource(R.string.common_delete),
                     variant = ButtonVariant.DANGER
                 )
                 ButtonComponent(
@@ -97,29 +99,29 @@ fun EditVegetableModal(
                             )
                         )
                     },
-                    label = "Enregistrer",
+                    label = stringResource(R.string.common_save),
                     variant = ButtonVariant.PRIMARY
                 )
             }
         },
-        dismissButton = { TextButton(onDismiss) { Text("Annuler", color = Color.Gray) } }
+        dismissButton = { TextButton(onDismiss) { Text(stringResource(R.string.common_cancel), color = Color.Gray) } }
     )
 
     if (showConfirm) {
         AlertDialog(
             onDismissRequest = { showConfirm = false },
-            title = { Text("Supprimer ?") },
+            title = { Text(stringResource(R.string.vegetable_delete_confirm_title)) },
             confirmButton = {
                 ButtonComponent(
                     onClick = {
                         onDelete(vegetable.id)
                         showConfirm = false
                     },
-                    label = "Confirmer",
+                    label = stringResource(R.string.common_confirm),
                     variant = ButtonVariant.DANGER
                 )
             },
-            dismissButton = { TextButton({ showConfirm = false }) { Text("Non") } }
+            dismissButton = { TextButton({ showConfirm = false }) { Text(stringResource(R.string.common_no)) } }
         )
     }
 }

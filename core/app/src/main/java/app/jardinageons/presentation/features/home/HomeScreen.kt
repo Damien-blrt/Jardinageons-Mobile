@@ -47,6 +47,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -62,7 +63,6 @@ import app.jardinageons.presentation.features.garden.GardenViewModel
 import app.jardinageons.presentation.features.garden.components.GardenPlanView
 import app.jardinageons.presentation.features.weather.WeatherViewModel
 import app.jardinageons.presentation.features.weather.components.WeatherWidget
-import java.util.Calendar
 
 @Composable
 fun HomeScreen(
@@ -72,30 +72,9 @@ fun HomeScreen(
     onGardenClick: () -> Unit = {}
 ) {
     val gardenUiState by gardenViewModel.uiState.collectAsStateWithLifecycle()
-    val advices by homeViewModel.advices.collectAsStateWithLifecycle()
+    val filteredAdvices by homeViewModel.filteredAdvices.collectAsStateWithLifecycle()
     val isLoading by homeViewModel.isLoading.collectAsStateWithLifecycle()
-
-    val currentMonthStr = remember {
-        val months = listOf(
-            "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
-            "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
-        )
-        months[Calendar.getInstance().get(Calendar.MONTH)]
-    }
-
-    val filteredAdvices = remember(advices, currentMonthStr) {
-        val normalizedCurrentMonth = currentMonthStr.lowercase()
-            .replace("é", "e")
-            .replace("û", "u")
-
-        advices.filter { advice ->
-            val normalizedApiMonth = advice.month
-                ?.lowercase()
-                ?.replace("é", "e")
-                ?.replace("û", "u")
-            normalizedApiMonth == normalizedCurrentMonth
-        }.take(2)
-    }
+    val currentMonthStr = homeViewModel.currentMonthName
 
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
@@ -136,6 +115,9 @@ fun HomeScreen(
         )
     }
 
+    val categoryGeneral = stringResource(R.string.home_category_general)
+    val noDescription = stringResource(R.string.home_no_description)
+
     Scaffold { padding ->
         LazyColumn(
             modifier = Modifier
@@ -144,7 +126,7 @@ fun HomeScreen(
             contentPadding = PaddingValues(bottom = 24.dp)
         ) {
             item {
-                SectionTitle("Météo en direct")
+                SectionTitle(stringResource(R.string.home_weather_title))
                 WeatherWidget(
                     viewModel = weatherViewModel,
                     modifier = Modifier.padding(top = 0.dp)
@@ -152,7 +134,7 @@ fun HomeScreen(
             }
 
             item {
-                SectionTitle("Restez informé")
+                SectionTitle(stringResource(R.string.home_stay_informed))
                 NotificationPromoCard(
                     hasPermission = hasNotificationPermission,
                     onClick = {
@@ -166,7 +148,7 @@ fun HomeScreen(
             }
 
             item {
-                SectionTitle("Mon Jardin")
+                SectionTitle(stringResource(R.string.home_my_garden))
                 HomeGardenCard(
                     canvasModel = gardenUiState.selectedCanvas,
                     isLoading = gardenUiState.isLoading,
@@ -176,7 +158,7 @@ fun HomeScreen(
             }
 
             item {
-                SectionTitle("Astuces de $currentMonthStr")
+                SectionTitle(stringResource(R.string.home_tips_of_month, currentMonthStr))
             }
 
             if (isLoading) {
@@ -191,7 +173,7 @@ fun HomeScreen(
             } else if (filteredAdvices.isEmpty()) {
                 item {
                     Text(
-                        text = "Aucun conseil spécifique pour le mois de ${currentMonthStr.lowercase()}.",
+                        text = stringResource(R.string.home_no_advice, currentMonthStr.lowercase()),
                         modifier = Modifier.padding(horizontal = 20.dp),
                         color = Color.Gray
                     )
@@ -206,8 +188,8 @@ fun HomeScreen(
                     val icon = if (index % 2 == 0) "🌱" else "🌸"
 
                     TipCard(
-                        category = adviceItem.titre ?: "Général",
-                        description = adviceItem.advice ?: "Pas de description.",
+                        category = adviceItem.titre ?: categoryGeneral,
+                        description = adviceItem.advice ?: noDescription,
                         icon = icon,
                         gradientColors = gradient
                     )
@@ -233,14 +215,14 @@ fun NotificationConfirmDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
         },
         title = {
             Text(
-                text = "Activer les rappels ?",
+                text = stringResource(R.string.home_notif_dialog_title),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold
             )
         },
         text = {
             Text(
-                "Recevez des notifications pour ne plus oublier d'arroser vos légumes. Vous pouvez changer cela dans les réglages à tout moment.",
+                stringResource(R.string.home_notif_dialog_text),
                 textAlign = TextAlign.Center
             )
         },
@@ -250,12 +232,12 @@ fun NotificationConfirmDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Confirmer")
+                Text(stringResource(R.string.common_confirm))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Plus tard", color = Color.Gray)
+                Text(stringResource(R.string.home_notif_later), color = Color.Gray)
             }
         }
     )
@@ -294,15 +276,15 @@ fun NotificationPromoCard(hasPermission: Boolean, onClick: () -> Unit) {
             Spacer(modifier = Modifier.width(16.dp))
             Column {
                 Text(
-                    text = if (hasPermission) "Notifications Activées" else "Rappels d'arrosage",
+                    text = if (hasPermission) stringResource(R.string.home_notif_active_title) else stringResource(R.string.home_notif_watering_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
                 Text(
                     text = if (hasPermission) {
-                        "Vous recevrez des rappels tous les 3 jours."
+                        stringResource(R.string.home_notif_active_desc)
                     } else {
-                        "Cliquez pour ne plus rien oublier !"
+                        stringResource(R.string.home_notif_inactive_desc)
                     },
                     fontSize = 13.sp,
                     color = Color.DarkGray
@@ -351,7 +333,7 @@ private fun HomeGardenCard(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.potted_plant),
-                    contentDescription = "Mon Jardin",
+                    contentDescription = stringResource(R.string.home_my_garden),
                     modifier = Modifier.size(64.dp),
                     alpha = 0.5f
                 )

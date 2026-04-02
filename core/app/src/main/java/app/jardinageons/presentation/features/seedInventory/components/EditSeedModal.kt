@@ -21,8 +21,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import app.jardinageons.R
 import app.jardinageons.data.models.Seed
 import app.jardinageons.presentation.components.ButtonComponent
 import app.jardinageons.presentation.components.ButtonVariant
@@ -58,27 +60,27 @@ fun EditSeedModal(
      */
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Modifier la variété") },
+        title = { Text(stringResource(R.string.seed_edit_title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 InputComponent(
                     value = name,
-                    label = "Nom de Légume",
+                    label = stringResource(R.string.seed_name_label),
                     onValueChange = { name = it }
                 )
                 InputComponent(
                     value = quantity,
-                    label = "Quantité",
+                    label = stringResource(R.string.common_quantity),
                     onValueChange = { quantity = it }
                 )
                 InputComponent(
                     value = germination,
-                    label = "Temps de germination(en nombre de jours)",
+                    label = stringResource(R.string.seed_germination_label),
                     onValueChange = { germination = it }
                 )
                 InputComponent(
                     value = dateExpiration,
-                    label = "Date d'expiration",
+                    label = stringResource(R.string.seed_expiry_label),
                     variant = InputType.DATE,
                     onValueChange = { dateExpiration = it }
                 )
@@ -86,15 +88,15 @@ fun EditSeedModal(
                 if (showDeleteConfirmation) {
                     AlertDialog(
                         onDismissRequest = { showDeleteConfirmation = false },
-                        title = { Text("Confirmer la suppression") },
-                        text = { Text("Es-tu sûr de vouloir supprimer la variété $name ? Cette action est irréversible.") },
+                        title = { Text(stringResource(R.string.common_confirm_delete)) },
+                        text = { Text(stringResource(R.string.seed_delete_confirm_message, name)) },
                         confirmButton = {
                             ButtonComponent(
                                 onClick = {
                                     showDeleteConfirmation = false
                                     onDelete(seed.id)
                                 },
-                                label = "Supprimer",
+                                label = stringResource(R.string.common_delete),
                                 variant = ButtonVariant.DANGER
                             )
                         },
@@ -103,7 +105,7 @@ fun EditSeedModal(
                                 onClick = {
                                     showDeleteConfirmation = false
                                 },
-                                label = "Annuler",
+                                label = stringResource(R.string.common_cancel),
                                 variant = ButtonVariant.SECONDARY
                             )
                         }
@@ -123,7 +125,7 @@ fun EditSeedModal(
                         )
                     )
                 },
-                label = "Enregistrer",
+                label = stringResource(R.string.common_save),
             )
         },
         dismissButton = {
@@ -131,7 +133,7 @@ fun EditSeedModal(
                 onClick = {
                     onDismiss()
                 },
-                label = "Annuler",
+                label = stringResource(R.string.common_cancel),
                 variant = ButtonVariant.SECONDARY
             )
         }

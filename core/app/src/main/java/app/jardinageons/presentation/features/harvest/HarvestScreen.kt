@@ -28,13 +28,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import app.jardinageons.R
 import app.jardinageons.data.models.Harvest
 import app.jardinageons.presentation.components.AnimatedPlantLoader
 import app.jardinageons.presentation.features.harvest.HarvestEvent.*
@@ -45,36 +48,29 @@ import app.jardinageons.presentation.theme.DarkGreen
 import app.jardinageons.presentation.theme.DarkOrange
 import app.jardinageons.presentation.theme.LightGreen
 import app.jardinageons.presentation.theme.LightOrange
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun HarvestScreen(viewModel: HarvestViewModel = viewModel()) {
-    val harvestList by viewModel.harvests.collectAsStateWithLifecycle()
+    val filteredHarvests by viewModel.filteredHarvests.collectAsStateWithLifecycle()
+    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val totalHarvests by viewModel.totalHarvests.collectAsStateWithLifecycle()
     val isLoading by viewModel.isFirstLoading.collectAsStateWithLifecycle()
     var selectedHarvestForEdit by remember { mutableStateOf<Harvest?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
 
-    var searchQuery by remember { mutableStateOf("") }
+    val msgModifiedSuccess = stringResource(R.string.harvest_modified_success)
+    val msgDeleteSuccess = stringResource(R.string.harvest_deleted_success)
+    val msgModifiedError = stringResource(R.string.harvest_modified_error)
+    val msgDeleteError = stringResource(R.string.harvest_deleted_error)
 
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { message ->
             when (message) {
-                modifiedSuccess -> snackbarHostState.showSnackbar("Récolte modifiée avec succès")
-                deleteSuccess -> snackbarHostState.showSnackbar("Récolte supprimée avec succès")
-                modifiedError -> snackbarHostState.showSnackbar("Erreur : Récolte non modifiée")
-                deleteError -> snackbarHostState.showSnackbar("Erreur : Récolte non supprimée")
+                modifiedSuccess -> snackbarHostState.showSnackbar(msgModifiedSuccess)
+                deleteSuccess -> snackbarHostState.showSnackbar(msgDeleteSuccess)
+                modifiedError -> snackbarHostState.showSnackbar(msgModifiedError)
+                deleteError -> snackbarHostState.showSnackbar(msgDeleteError)
             }
-        }
-    }
-
-    val filteredHarvests = remember(harvestList, searchQuery) {
-        if (searchQuery.isBlank()) harvestList
-        else harvestList.filter {
-            it.description.contains(searchQuery, ignoreCase = true) ||
-                    it.date.contains(searchQuery, ignoreCase = true)
         }
     }
 
@@ -91,24 +87,7 @@ fun HarvestScreen(viewModel: HarvestViewModel = viewModel()) {
                         harvest = harvest,
                         onDismiss = { selectedHarvestForEdit = null },
                         onSave = { updatedHarvest ->
-                            val isoDate = try {
-                                val inputFormat =
-                                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                                val outputFormat =
-                                    SimpleDateFormat(
-                                        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-                                        Locale.getDefault()
-                                    )
-                                val date = inputFormat.parse(updatedHarvest.date)
-                                outputFormat.format(date)
-                            } catch (e: Exception) {
-                                SimpleDateFormat(
-                                    "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-                                    Locale.getDefault()
-                                ).format(Date())
-                            }
-                            val harvestToSave = updatedHarvest.copy(date = isoDate)
-                            viewModel.updateHarvest(harvestToSave.id, harvestToSave)
+                            viewModel.updateHarvest(updatedHarvest.id, updatedHarvest)
                             selectedHarvestForEdit = null
                         },
                         onDelete = { id ->
@@ -122,7 +101,7 @@ fun HarvestScreen(viewModel: HarvestViewModel = viewModel()) {
                     item {
                         OutlinedTextField(
                             value = searchQuery,
-                            onValueChange = { newText -> searchQuery = newText },
+                            onValueChange = { viewModel.setSearchQuery(it) },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.Search,
@@ -130,7 +109,7 @@ fun HarvestScreen(viewModel: HarvestViewModel = viewModel()) {
                                     tint = Color.Gray
                                 )
                             },
-                            label = { Text("Rechercher une récolte") },
+                            label = { Text(stringResource(R.string.harvest_search)) },
                             shape = RoundedCornerShape(15.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = Color.Green,
@@ -150,7 +129,7 @@ fun HarvestScreen(viewModel: HarvestViewModel = viewModel()) {
                         ) {
                                 StatCard(
                                     value = "${filteredHarvests.size}",
-                                    label = "Récoltes",
+                                    label = stringResource(R.string.harvest_count_label),
                                     gradient = Brush.verticalGradient(
                                         listOf(LightGreen, DarkGreen)
                                     ),
@@ -160,7 +139,7 @@ fun HarvestScreen(viewModel: HarvestViewModel = viewModel()) {
 
                                 StatCard(
                                     value = "${totalHarvests}",
-                                    label = "Kg total",
+                                    label = stringResource(R.string.harvest_kg_total),
                                     gradient = Brush.verticalGradient(
                                         listOf(LightOrange, DarkOrange)
                                     ) ,
@@ -174,14 +153,14 @@ fun HarvestScreen(viewModel: HarvestViewModel = viewModel()) {
                     }
                     item {
                         Text(
-                            text = "Mes récoltes", fontSize = 22.sp,
+                            text = stringResource(R.string.harvest_my_harvests), fontSize = 22.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
                     item {
                         Spacer(modifier = Modifier.height(8.dp))
                     }
-                    items(items = filteredHarvests) { harvest ->
+                    items(items = filteredHarvests, key = { it.id }) { harvest ->
                         HarvestCard(
                             harvest = harvest,
                             color = Color(0xFF46A24A),

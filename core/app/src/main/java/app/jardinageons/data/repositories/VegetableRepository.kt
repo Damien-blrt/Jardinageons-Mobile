@@ -3,7 +3,7 @@ package app.jardinageons.data.repositories
 import app.jardinageons.data.models.PagedResponse
 import app.jardinageons.data.models.Vegetable
 import app.jardinageons.data.services.IVegetableService
-import app.jardinageons.presentation.features.vegetable.VegetableRequest
+import app.jardinageons.data.models.VegetableRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

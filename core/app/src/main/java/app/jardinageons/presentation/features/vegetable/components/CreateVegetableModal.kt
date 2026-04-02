@@ -13,7 +13,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import app.jardinageons.R
 import app.jardinageons.presentation.components.ButtonComponent
 import app.jardinageons.presentation.components.ButtonVariant
 import app.jardinageons.presentation.components.InputComponent
@@ -46,37 +48,37 @@ fun CreateVegetableModal(onDismiss: () -> Unit, onSave: (VegetableRequest) -> Un
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Nouveau légume") },
+        title = { Text(stringResource(R.string.vegetable_create_title)) },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState()), Arrangement.spacedBy(8.dp)) {
-                InputComponent(value = name, label = "Nom", onValueChange = { name = it })
+                InputComponent(value = name, label = stringResource(R.string.common_name), onValueChange = { name = it })
                 InputComponent(
                     value = description,
-                    label = "Description",
+                    label = stringResource(R.string.common_description),
                     onValueChange = { description = it })
                 InputComponent(
                     value = germination,
-                    label = "Germination (jours)",
+                    label = stringResource(R.string.vegetable_germination_label),
                     variant = InputType.NUMBER,
                     onValueChange = { germination = it })
                 InputComponent(
                     value = sowingStart,
-                    label = "Début semis",
+                    label = stringResource(R.string.vegetable_sowing_start),
                     variant = InputType.DATE,
                     onValueChange = { sowingStart = it })
                 InputComponent(
                     value = sowingEnd,
-                    label = "Fin semis",
+                    label = stringResource(R.string.vegetable_sowing_end),
                     variant = InputType.DATE,
                     onValueChange = { sowingEnd = it })
                 InputComponent(
                     value = harvestStart,
-                    label = "Début récolte",
+                    label = stringResource(R.string.vegetable_harvest_start),
                     variant = InputType.DATE,
                     onValueChange = { harvestStart = it })
                 InputComponent(
                     value = harvestEnd,
-                    label = "Fin récolte",
+                    label = stringResource(R.string.vegetable_harvest_end),
                     variant = InputType.DATE,
                     onValueChange = { harvestEnd = it })
             }
@@ -96,13 +98,13 @@ fun CreateVegetableModal(onDismiss: () -> Unit, onSave: (VegetableRequest) -> Un
                         )
                     )
                 },
-                label = "Créer"
+                label = stringResource(R.string.common_create)
             )
         },
         dismissButton = {
             ButtonComponent(
                 onClick = onDismiss,
-                label = "Annuler",
+                label = stringResource(R.string.common_cancel),
                 variant = ButtonVariant.SECONDARY
             )
         }

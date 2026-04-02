@@ -10,7 +10,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import app.jardinageons.R
 import app.jardinageons.data.models.Harvest
 import app.jardinageons.presentation.components.ButtonComponent
 import app.jardinageons.presentation.components.ButtonVariant
@@ -33,23 +35,23 @@ fun EditHarvestModal(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Modifier la récolte") },
+        title = { Text(stringResource(R.string.harvest_edit_title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 InputComponent(
                     value = quantity,
-                    label = "Quantité (kg)",
+                    label = stringResource(R.string.harvest_quantity_label),
                     variant = InputType.NUMBER,
                     onValueChange = { quantity = it }
                 )
                 InputComponent(
                     value = description,
-                    label = "Description",
+                    label = stringResource(R.string.common_description),
                     onValueChange = { description = it }
                 )
                 InputComponent(
                     value = date,
-                    label = "Date de récolte",
+                    label = stringResource(R.string.harvest_date_label),
                     variant = InputType.DATE,
                     onValueChange = { date = it }
                 )
@@ -57,15 +59,15 @@ fun EditHarvestModal(
                 if (showDeleteConfirmation) {
                     AlertDialog(
                         onDismissRequest = { showDeleteConfirmation = false },
-                        title = { Text("Confirmer la suppression") },
-                        text = { Text("Es-tu sûr de vouloir supprimer cette récolte ? Cette action est irréversible.") },
+                        title = { Text(stringResource(R.string.common_confirm_delete)) },
+                        text = { Text(stringResource(R.string.harvest_delete_confirm_message)) },
                         confirmButton = {
                             ButtonComponent(
                                 onClick = {
                                     showDeleteConfirmation = false
                                     onDelete(harvest.id)
                                 },
-                                label = "Supprimer",
+                                label = stringResource(R.string.common_delete),
                                 variant = ButtonVariant.DANGER
                             )
                         },
@@ -74,7 +76,7 @@ fun EditHarvestModal(
                                 onClick = {
                                     showDeleteConfirmation = false
                                 },
-                                label = "Annuler",
+                                label = stringResource(R.string.common_cancel),
                                 variant = ButtonVariant.SECONDARY
                             )
                         }
@@ -93,19 +95,19 @@ fun EditHarvestModal(
                         )
                     )
                 },
-                label = "Enregistrer",
+                label = stringResource(R.string.common_save),
             )
         },
         dismissButton = {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 ButtonComponent(
                     onClick = { showDeleteConfirmation = true },
-                    label = "Supprimer",
+                    label = stringResource(R.string.common_delete),
                     variant = ButtonVariant.DANGER
                 )
                 ButtonComponent(
                     onClick = { onDismiss() },
-                    label = "Annuler",
+                    label = stringResource(R.string.common_cancel),
                     variant = ButtonVariant.SECONDARY
                 )
             }

@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -93,15 +94,15 @@ fun VegetableCard(vegetable: Vegetable, color: Color, onClick: () -> Unit) {
                 Info(
                     Modifier.weight(1f),
                     { Icon(Icons.Default.Star, null, tint = Color(0xFFD6A21A)) },
-                    "Semis",
-                    "${vegetable.sowingStart.take(5)} au ${vegetable.sowingEnd.take(5)}",
+                    stringResource(R.string.vegetable_sowing),
+                    stringResource(R.string.vegetable_date_range, vegetable.sowingStart.take(5), vegetable.sowingEnd.take(5)),
                     Color(0xFFFFF8E1)
                 )
                 Info(
                     Modifier.weight(1f),
                     { Icon(Icons.Default.DateRange, null, tint = Color(0xFF46A24A)) },
-                    "Récolte",
-                    "${vegetable.harvestStart.take(5)} au ${vegetable.harvestEnd.take(5)}",
+                    stringResource(R.string.vegetable_harvest_label),
+                    stringResource(R.string.vegetable_date_range, vegetable.harvestStart.take(5), vegetable.harvestEnd.take(5)),
                     Color(0xFFF0FFF0)
                 )
             }

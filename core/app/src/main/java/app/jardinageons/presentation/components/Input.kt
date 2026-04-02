@@ -10,7 +10,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import app.jardinageons.R
 import java.util.*
 
 enum class InputType {
@@ -97,7 +99,7 @@ fun InputComponent(
                             onValueChange(selectedDate)
                             showDatePicker = false
                         }) {
-                            Text("OK")
+                            Text(stringResource(R.string.common_ok))
                         }
                     }
                 ) {

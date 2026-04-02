@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -93,7 +94,7 @@ fun SeedCard(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Graines".uppercase(),
+                        text = stringResource(R.string.seed_count_label).uppercase(),
                         color = Color.White,
                         fontSize = 14.sp,
                         textAlign = TextAlign.Center,
@@ -132,8 +133,8 @@ fun SeedCard(
                             tint = Color.Blue
                         )
                     },
-                    title = "Germination",
-                    value = "${seed.germinationTime} jours",
+                    title = stringResource(R.string.seed_germination_info),
+                    value = stringResource(R.string.seed_germination_days, seed.germinationTime),
                     backgroundColor = Color(0xFFF0F4FF)
                 )
 
@@ -146,7 +147,7 @@ fun SeedCard(
                             tint = Color(0xFF46A24A)
                         )
                     },
-                    title = "Expiration",
+                    title = stringResource(R.string.seed_expiry_info),
                     value = seed.expiryDate,
                     backgroundColor = Color(0xFFF0FFF0)
                 )

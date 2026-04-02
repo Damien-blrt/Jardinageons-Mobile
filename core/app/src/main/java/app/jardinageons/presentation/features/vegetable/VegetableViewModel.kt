@@ -3,19 +3,21 @@ package app.jardinageons.presentation.features.vegetable
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.jardinageons.data.models.PagedResponse
 import app.jardinageons.data.models.Vegetable
+import app.jardinageons.data.models.VegetableRequest
 import app.jardinageons.data.repositories.VegetableRepository
 import app.jardinageons.data.services.RetrofitClient.vegetableService
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-
 
 enum class Event {
     addSuccess, addError, modifiedSuccess, modifiedError, deleteSuccess, deleteError
@@ -27,6 +29,14 @@ class VegetableViewModel(
 
     private val _vegetables = MutableStateFlow<List<Vegetable>>(emptyList())
     val vegetables: StateFlow<List<Vegetable>> = _vegetables.asStateFlow()
+
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+    val filteredVegetables: StateFlow<List<Vegetable>> = combine(_vegetables, _searchQuery) { vegetables, query ->
+        if (query.isBlank()) vegetables
+        else vegetables.filter { it.name.contains(query, ignoreCase = true) }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _totalVegetables = MutableStateFlow(0)
     val totalVegetables: StateFlow<Int> = _totalVegetables.asStateFlow()
@@ -41,11 +51,15 @@ class VegetableViewModel(
         loadVegetables()
     }
 
+    fun setSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
+
     fun loadVegetables() {
         viewModelScope.launch {
             try {
                 val response = _repository.getVegetables(0, 10)
-                normalizeVegetables(response)
+                normalizeVegetables(response.items)
                 _totalVegetables.value = response.items.size
             } catch (e: Exception) {
                 _vegetables.value = emptyList()
@@ -66,9 +80,8 @@ class VegetableViewModel(
         }
     }
 
-    private fun normalizeVegetables(response: PagedResponse<Vegetable>) {
-
-        val cleanList = response.items.map { vegetable ->
+    private fun normalizeVegetables(items: List<Vegetable>) {
+        _vegetables.value = items.map { vegetable ->
             vegetable.copy(
                 name = vegetable.name.uppercase(),
                 sowingStart = formatDate(vegetable.sowingStart),
@@ -77,7 +90,6 @@ class VegetableViewModel(
                 harvestEnd = formatDate(vegetable.harvestEnd)
             )
         }
-        _vegetables.value = cleanList
     }
 
     fun createVegetable(request: VegetableRequest) {

@@ -29,9 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import app.jardinageons.R
 import app.jardinageons.data.models.Garden
 import app.jardinageons.presentation.features.garden.components.GardenPlanView
 
@@ -75,7 +77,7 @@ fun GardenScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = "Mon potager",
+            text = stringResource(R.string.garden_title),
             style = MaterialTheme.typography.titleLarge
         )
 
@@ -87,7 +89,7 @@ fun GardenScreen(
 
         if (selectedCanvas == null) {
             GardenPlanPlaceholder(
-                message = "Ce jardin ne contient pas encore de plan.",
+                message = stringResource(R.string.garden_no_plan),
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -132,10 +134,10 @@ private fun GardenUnavailableState(
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("Aucun jardin disponible.")
+            Text(stringResource(R.string.garden_unavailable))
             Spacer(modifier = Modifier.height(12.dp))
             Button(onClick = onRetry) {
-                Text("Réessayer")
+                Text(stringResource(R.string.common_retry))
             }
         }
     }
@@ -159,7 +161,7 @@ private fun GardenErrorState(
             )
             Spacer(modifier = Modifier.height(12.dp))
             Button(onClick = onRetry) {
-                Text("Réessayer")
+                Text(stringResource(R.string.common_retry))
             }
         }
     }
@@ -180,7 +182,7 @@ private fun GardenSelector(
             value = selectedGardenName,
             onValueChange = {},
             readOnly = true,
-            label = { Text("Jardin") },
+            label = { Text(stringResource(R.string.garden_selector_label)) },
             trailingIcon = { Text(if (isExpanded) "▲" else "▼") },
             modifier = Modifier.fillMaxWidth()
         )

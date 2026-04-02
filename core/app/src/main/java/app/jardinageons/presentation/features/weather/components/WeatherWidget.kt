@@ -31,6 +31,11 @@ import androidx.compose.ui.unit.sp
 import app.jardinageons.data.models.WeatherSummary
 import app.jardinageons.presentation.features.weather.WeatherViewModel
 
+private val WeatherColorLightBlue = Color(0xFF4facfe)
+private val WeatherColorDarkBlue = Color(0xFF4932d1)
+private val WeatherColorYellow = Color(0xFFf1bc00)
+private val WeatherColorDarkText = Color(0xFF1C1C1E)
+
 @SuppressLint("MissingPermission")
 @Composable
 fun WeatherWidget(
@@ -79,8 +84,6 @@ fun WeatherWidget(
         }
     }
 
-    val colorLightBlue = Color(0xFF4facfe)
-    val colorDarkBlue = Color(0xFF4932d1)
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -93,7 +96,7 @@ fun WeatherWidget(
                 .fillMaxWidth()
                 .background(
                     brush = Brush.linearGradient(
-                        colors = listOf(colorLightBlue, colorDarkBlue)
+                        colors = listOf(WeatherColorLightBlue, WeatherColorDarkBlue)
                     )
                 )
         ) {
@@ -122,9 +125,6 @@ private fun LoadingState() {
 @Composable
 private fun WeatherContent(summary: WeatherSummary) {
     val isRainy = summary.rainTotal24h > 0.0
-
-    val colorYellow = Color(0xFFf1bc00)
-    val colorDarkText = Color(0xFF1C1C1E)
 
     val mainCondition = if (isRainy) "Pluvieux" else "Nuageux"
     val mainIcon = if (isRainy) "🌧️" else "⛅"
@@ -255,7 +255,7 @@ private fun WeatherContent(summary: WeatherSummary) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(colorYellow)
+                .background(WeatherColorYellow)
                 .padding(horizontal = 16.dp, vertical = 14.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -263,7 +263,7 @@ private fun WeatherContent(summary: WeatherSummary) {
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     text = adviceText,
-                    color = colorDarkText,
+                    color = WeatherColorDarkText,
                     fontSize = 15.sp
                 )
             }
